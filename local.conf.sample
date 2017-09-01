@@ -1,0 +1,39 @@
+# Local configurations for jenkins poudriere build
+
+# for debugging (normally comment this out)
+#DRYRUN="-n"
+
+# Name of ports tree on which poudriere work
+PORTSTREE="default"
+
+# Prefix of jails on which poudriere work
+# Actual jails will be releng111amd64, releng111i386, etc.
+JAILNAMEPREFIX="releng111"
+
+# Poudriere-related directory
+LOCALBASE="/usr/local"
+LOCALETCDIR="${LOCALBASE}/etc"
+POUDRIERECONFDIR="${LOCALETCDIR}/poudriere.d"
+
+# Base directory for storing built packages
+PKGBASEDIR="/var/poudriere/data/packages"
+
+# FreeBSD major version (used as a part of ABI string)
+MAJORREL=$(uname -r|awk -F. '{print $1}')
+
+# List of architectures for which packages are built
+###
+### NOTE: Add postfix "x" to archname for cross compiling
+###       (i.e. you specified -x option when creating the jail)
+###
+ARCHLIST="amd64 i386 armv6x aarch64x mips64x"
+
+# Host information for package synching
+# Hostname
+RSYNCHOST="[address of your package web/ftp/... server]"
+# Port for rsyncing
+RSYNCPORT="22"
+# User for rsyncing
+RSYNCUSER="www"
+# Directory of web document root for package serving
+RSYNCBASE="/usr/local/www/packages"
