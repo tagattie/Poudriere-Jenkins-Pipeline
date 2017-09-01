@@ -1,6 +1,9 @@
 #! groovy
 
 node {
+    stage('Checkout script files.') {
+        checkout scm
+    }
     stage('Set buildname based on date/time.') {
         sh "${WORKSPACE}/SetBuildName.sh"
     }
