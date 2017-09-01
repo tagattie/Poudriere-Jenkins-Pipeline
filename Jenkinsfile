@@ -88,7 +88,7 @@ node {
         }
     }
     stage('Clean up temporary files.') {
-        cleanWs notFailBuild: true, patterns: [[pattern: 'poudriere.buildname', type: 'INCLUDE']]
+        cleanWs notFailBuild: true, patterns: [[pattern: 'poudriere.*', type: 'INCLUDE']]
     }
     stage('Sync built artifact with package server.') {
         try {
