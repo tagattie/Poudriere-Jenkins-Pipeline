@@ -14,7 +14,7 @@
 node {
     stage('Checkout script files.') {
         checkout scm
-        notifyBuild channelName: channelName, buildStatus: 'START'
+        notifySlack(channelName, 'START')
     }
     stage('Set buildname based on date/time.') {
         sh "${WORKSPACE}/SetBuildName.sh"
@@ -30,7 +30,7 @@ node {
             currentBuild.result = 'SUCCESS'
         } catch (Exception e) {
             currentBuild.result = 'FAILURE'
-            notifyBuild channelName: channelName, stageName: 'amd64', buildStatus: currentBuild.result
+            notifySlack(channelName, 'amd64', currentBuild.result)
         }
     }
 
@@ -40,7 +40,7 @@ node {
             currentBuild.result = 'SUCCESS'
         } catch (Exception e) {
             currentBuild.result = 'FAILURE'
-            notifyBuild channelName: channelName, stageName: 'i386', buildStatus: currentBuild.result
+            notifySlack(channelName, 'i386', currentBuild.result)
         }
     }
 
@@ -52,7 +52,7 @@ node {
             currentBuild.result = 'SUCCESS'
         } catch (Exception e) {
             currentBuild.result = 'FAILURE'
-            notifyBuild channelName: channelName, stageName: 'armv6 native', buildStatus: currentBuild.result
+            notifySlack(channelName, 'armv6 native', currentBuild.result)
         }
     }
     stage('Copy native-built packages to cross build working directory.') {
@@ -69,7 +69,7 @@ node {
             currentBuild.result = 'SUCCESS'
         } catch (Exception e) {
             currentBuild.result = 'FAILURE'
-            notifyBuild channelName: channelName, stageName: 'armv6 cross', buildStatus: currentBuild.result
+            notifySlack(channelName, 'armv6 cross', currentBuild.result)
         }
     }
 
@@ -81,7 +81,7 @@ node {
             currentBuild.result = 'SUCCESS'
         } catch (Exception e) {
             currentBuild.result = 'FAILURE'
-            notifyBuild channelName: channelName, stageName: 'aarch64 native', buildStatus: currentBuild.result
+            notifySlack(channelName, 'aarch64 native', currentBuild.result)
         }
     }
     stage('Copy native-built packages to cross build working directory.') {
@@ -98,7 +98,7 @@ node {
             currentBuild.result = 'SUCCESS'
         } catch (Exception e) {
             currentBuild.result = 'FAILURE'
-            notifyBuild channelName: channelName, stageName: 'aarch64 native', buildStatus: currentBuild.result
+            notifySlack(channelName, 'aarch64 native', currentBuild.result)
         }
     }
 
@@ -108,7 +108,7 @@ node {
             currentBuild.result = 'SUCCESS'
         } catch (Exception e) {
             currentBuild.result = 'FAILURE'
-            notifyBuild channelName: channelName, stageName: 'mips64 cross', buildStatus: currentBuild.result
+            notifySlack(channelName, 'mips64 cross', currentBuild.result)
         }
     }
 
@@ -121,17 +121,19 @@ node {
             currentBuild.result = 'SUCCESS'
         } catch (Exception e) {
             currentBuild.result = 'FAILURE'
-            notifyBuild channelName: channelName, stageName: 'sync', buildStatus: currentBuild.result
+            notifySlack(channelName, 'sync', currentBuild.result)
         }
     }
     stage('Send notification to Slack.') {
-        notifyBuild channelName: channelName, stageName: 'final', buildStatus: currentBuild.result
+        notifySlack(channelName, 'finally', curentBuild.result)
     }
 }
 
-def notifyBuild(String channelName = '#general',
-                String stageName,
-                String buildStatus = 'START') {
+def notifySlack(String channelName = '#general',
+                String stageName = '',
+                String buildStatus) {
+
+    def colorCode, statusString
 
     if (buildStatus == 'START') {
         colorCode = '#BBBBBB' // grey
@@ -142,11 +144,11 @@ def notifyBuild(String channelName = '#general',
         statusString = 'finished successful'
     }
     else {
-        colorCode = '#BB0000'
+        colorCode = '#BB0000' // red
         statusString = 'finished failed'
     }
 
-    def message = "Build ${stageName} ${statusString} - ${env.JOB_NAME} #${env.BUILD_NUMBER} (<${env.BUILD_URL}/console|Open>)"
+    def message = "Build ${stageName} ${statusString} - ${env.JOB_NAME} #${env.BUILD_NUMBER} (<${env.BUILD_URL}console|Open>)"
 
     slackSend channel: channelName, color: colorCode, message: message
 }
