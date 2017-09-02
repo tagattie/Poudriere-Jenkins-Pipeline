@@ -1,7 +1,9 @@
 # Local configurations for jenkins poudriere build
 
 # for debugging (normally comment this out)
-#DRYRUN="-n"
+#DRYRUN_UPDATE="-n"
+#DRYRUN_BUILD="-n"
+#DRYRUN_SYNC="-n"
 
 # Name of ports tree on which poudriere work
 PORTSTREE="default"
