@@ -1,5 +1,15 @@
 #! /usr/bin/env groovy
 
+////////
+// Set this job as "parameterized build" and
+// specify the following parameters.
+//
+// sshCredential (credential for logging into the following hosts)
+// sshUser       (user for ssh remote login)
+// armv6Host     (native build host of armv6 packages)
+// aarch64Host   (native build host of aarch64 packages)
+////////
+
 node {
     stage('Checkout script files.') {
         checkout scm
@@ -12,6 +22,7 @@ node {
     stage('Update ports tree.') {
         sh "${WORKSPACE}/UpdateTree.sh"
     }
+
     stage('Build packages for amd64 architecture.') {
         try {
             sh "${WORKSPACE}/BuildPackages.sh amd64 native ${buildName}"
@@ -21,6 +32,7 @@ node {
             notifyBuild channelName: channelName, stageName: 'amd64', buildStatus: currentBuild.result
         }
     }
+
     stage('Build packages for i386 architecture.') {
         try {
             sh "${WORKSPACE}/BuildPackages.sh i386 native ${buildName}"
@@ -30,11 +42,12 @@ node {
             notifyBuild channelName: channelName, stageName: 'i386', buildStatus: currentBuild.result
         }
     }
+
     stage('Build packages for armv6 architecture. (Native building)') {
         try {
-            def buildHost='sugarbush'
-            def buildUser='root'
-            sh "ssh ${buildUser}@${buildHost} /root/bin/BuildPackages.sh armv6 native ${buildName}"
+            sshagent (credentials: [sshCredential]) {
+                sh "ssh ${sshUser}@${armv6Host} /root/bin/BuildPackages.sh armv6 native ${buildName}"
+            }
             currentBuild.result = 'SUCCESS'
         } catch (Exception e) {
             currentBuild.result = 'FAILURE'
@@ -58,11 +71,12 @@ node {
             notifyBuild channelName: channelName, stageName: 'armv6 cross', buildStatus: currentBuild.result
         }
     }
+
     stage('Build packages for aarch64 architecture. (Native building)') {
         try {
-            def buildHost='tamarack'
-            def buildUser='root'
-            sh "ssh ${buildUser}@${buildHost} /root/bin/BuildPackages.sh aarch64 native ${buildName}"
+            sshagent (credentials: [sshCredential]) {
+                sh "ssh ${sshUser}@${aarch64Host} /root/bin/BuildPackages.sh aarch64 native ${buildName}"
+            }
             currentBuild.result = 'SUCCESS'
         } catch (Exception e) {
             currentBuild.result = 'FAILURE'
@@ -86,6 +100,7 @@ node {
             notifyBuild channelName: channelName, stageName: 'aarch64 native', buildStatus: currentBuild.result
         }
     }
+
     stage('Build packages for mips64 architecture. (Cross building)') {
         try {
             sh "${WORKSPACE}/BuildPackages.sh mips64 cross ${buildName}"
@@ -95,6 +110,7 @@ node {
             notifyBuild channelName: channelName, stageName: 'mips64 cross', buildStatus: currentBuild.result
         }
     }
+
     stage('Clean up temporary files.') {
         cleanWs notFailBuild: true, patterns: [[pattern: 'poudriere.*', type: 'INCLUDE']]
     }
