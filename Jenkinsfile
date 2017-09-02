@@ -3,6 +3,7 @@
 node {
     stage('Checkout script files.') {
         checkout scm
+        notifyBuild channelName: channelName, buildStatus: 'START'
     }
     stage('Set buildname based on date/time.') {
         sh "${WORKSPACE}/SetBuildName.sh"
@@ -17,6 +18,7 @@ node {
             currentBuild.result = 'SUCCESS'
         } catch (Exception e) {
             currentBuild.result = 'FAILURE'
+            notifyBuild channelName: channelName, stageName: 'amd64', buildStatus: currentBuild.result
         }
     }
     stage('Build packages for i386 architecture.') {
@@ -25,6 +27,7 @@ node {
             currentBuild.result = 'SUCCESS'
         } catch (Exception e) {
             currentBuild.result = 'FAILURE'
+            notifyBuild channelName: channelName, stageName: 'i386', buildStatus: currentBuild.result
         }
     }
     stage('Build packages for armv6 architecture. (Native building)') {
@@ -35,6 +38,7 @@ node {
             currentBuild.result = 'SUCCESS'
         } catch (Exception e) {
             currentBuild.result = 'FAILURE'
+            notifyBuild channelName: channelName, stageName: 'armv6 native', buildStatus: currentBuild.result
         }
     }
     stage('Copy native-built packages to cross build working directory.') {
@@ -51,6 +55,7 @@ node {
             currentBuild.result = 'SUCCESS'
         } catch (Exception e) {
             currentBuild.result = 'FAILURE'
+            notifyBuild channelName: channelName, stageName: 'armv6 cross', buildStatus: currentBuild.result
         }
     }
     stage('Build packages for aarch64 architecture. (Native building)') {
@@ -61,6 +66,7 @@ node {
             currentBuild.result = 'SUCCESS'
         } catch (Exception e) {
             currentBuild.result = 'FAILURE'
+            notifyBuild channelName: channelName, stageName: 'aarch64 native', buildStatus: currentBuild.result
         }
     }
     stage('Copy native-built packages to cross build working directory.') {
@@ -77,6 +83,7 @@ node {
             currentBuild.result = 'SUCCESS'
         } catch (Exception e) {
             currentBuild.result = 'FAILURE'
+            notifyBuild channelName: channelName, stageName: 'aarch64 native', buildStatus: currentBuild.result
         }
     }
     stage('Build packages for mips64 architecture. (Cross building)') {
@@ -85,6 +92,7 @@ node {
             currentBuild.result = 'SUCCESS'
         } catch (Exception e) {
             currentBuild.result = 'FAILURE'
+            notifyBuild channelName: channelName, stageName: 'mips64 cross', buildStatus: currentBuild.result
         }
     }
     stage('Clean up temporary files.') {
@@ -96,6 +104,7 @@ node {
             currentBuild.result = 'SUCCESS'
         } catch (Exception e) {
             currentBuild.result = 'FAILURE'
+            notifyBuild channelName: channelName, stageName: 'sync', buildStatus: currentBuild.result
         }
     }
     stage('Send notification to Slack.') {
