@@ -99,6 +99,28 @@ node {
         }
     }
     stage('Send notification to Slack.') {
-        slackSend channel: "#jenkins", message: "Build finished - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
+        notifyBuild channelName: channelName, stageName: 'final', buildStatus: currentBuild.result
     }
+}
+
+def notifyBuild(String channelName = '#general',
+                String stageName,
+                String buildStatus = 'START') {
+
+    if (buildStatus == 'START') {
+        colorCode = '#BBBBBB' // grey
+        statusString = 'started'
+    }
+    else if (buildStatus == 'SUCCESS') {
+        colorCode = '#008800' // green
+        statusString = 'finished successful'
+    }
+    else {
+        colorCode = '#BB0000'
+        statusString = 'finished failed'
+    }
+
+    def message = "Build ${stageName} ${statusString} - ${env.JOB_NAME} #${env.BUILD_NUMBER} (<${env.BUILD_URL}/console|Open>)"
+
+    slackSend channel: channelName, color: colorCode, message: message
 }
