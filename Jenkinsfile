@@ -6,7 +6,7 @@ node {
     }
     stage('Set buildname based on date/time.') {
         sh "${WORKSPACE}/SetBuildName.sh"
-	buildName=readFile encoding: 'utf-8', file: 'poudriere.buildname'
+        buildName=readFile encoding: 'utf-8', file: 'poudriere.buildname'
     }
     stage('Update ports tree.') {
         sh "${WORKSPACE}/UpdateTree.sh"
