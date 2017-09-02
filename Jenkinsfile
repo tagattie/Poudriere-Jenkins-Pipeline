@@ -8,6 +8,7 @@
 // sshUser       (user for ssh remote login)
 // armv6Host     (native build host of armv6 packages)
 // aarch64Host   (native build host of aarch64 packages)
+// channelName   (Slack channel for notification use)
 ////////
 
 node {
