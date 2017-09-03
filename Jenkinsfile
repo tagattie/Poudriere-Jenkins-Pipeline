@@ -55,12 +55,12 @@ node {
                 sh "ssh ${sshUser}@${armv6Host} ~/bin/${scriptName} armv6 native ${buildName}"
                 sh "ssh ${sshUser}@${armv6Host} rm -f ~/bin/${scriptName} ~/bin/${confName}"
                 // Don't treat directory removal failure as stage failure
-                sh "ssh ${sshUser}@${armv6Host} rmdir ~/bin || ESTAT=${?}"
+                sh "ssh ${sshUser}@${armv6Host} rmdir ~/bin || echo ignore"
             }
             currentBuild.result = 'SUCCESS'
         } catch (Exception e) {
             sh "ssh ${sshUser}@${armv6Host} rm -f ~/bin/${scriptName} ~/bin/${confName}"
-            sh "ssh ${sshUser}@${armv6Host} rmdir ~/bin || ESTAT=${?}"
+            sh "ssh ${sshUser}@${armv6Host} rmdir ~/bin || echo ignore"
             currentBuild.result = 'FAILURE'
             notifySlack(channelName, 'armv6 native', currentBuild.result)
         }
@@ -102,12 +102,12 @@ node {
                 sh "ssh ${sshUser}@${aarch64Host} ~/bin/${scriptName} aarch64 native ${buildName}"
                 sh "ssh ${sshUser}@${aarch64Host} rm -f ~/bin/${scriptName} ~/bin/${confName}"
                 // Don't treat directory removal failure as stage failure
-                sh "ssh ${sshUser}@${aarch64Host} rmdir ~/bin || ESTAT=${?}"
+                sh "ssh ${sshUser}@${aarch64Host} rmdir ~/bin || echo ignore"
             }
             currentBuild.result = 'SUCCESS'
         } catch (Exception e) {
             sh "ssh ${sshUser}@${aarch64Host} rm -f ~/bin/${scriptName} ~/bin/${confName}"
-            sh "ssh ${sshUser}@${aarch64Host} rmdir ~/bin || ESTAT=${?}"
+            sh "ssh ${sshUser}@${aarch64Host} rmdir ~/bin || echo ignore"
             currentBuild.result = 'FAILURE'
             notifySlack(channelName, 'aarch64 native', currentBuild.result)
         }
