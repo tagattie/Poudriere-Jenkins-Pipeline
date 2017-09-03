@@ -1,6 +1,6 @@
 #! /bin/sh -xe
 
-export PATH=/bin:/usr/bin:/usr/local/bin
+export PATH=/bin:/usr/bin:/usr/local/bin:/usr/local/libexec/poudriere
 
 . ${WORKSPACE}/local.conf
 
@@ -13,5 +13,6 @@ CROSSPKGDIR=${PKGBASEDIR}/${JAILNAMEPREFIX}${ARCH}x-${PORTSTREE}
 
 # Simply sync contents of native and cross package directories
 # (Sync direction is cross pkg dir -> native pkg dir.)
-sudo rsync ${DRYRUN_COPY} -av --info=STATS3 --delete --stats \
-    ${CROSSPKGDIR}/ ${NATIVEPKGDIR}
+# sudo rsync ${DRYRUN_COPY} -av --info=STATS3 --delete --stats \
+#     ${CROSSPKGDIR}/ ${NATIVEPKGDIR}
+cpdup ${DRYRUN_COPY} -i0 -x -I ${CROSSPKGDIR} ${NATIVEPKGDIR}

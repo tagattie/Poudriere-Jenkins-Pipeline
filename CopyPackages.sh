@@ -1,6 +1,6 @@
 #! /bin/sh -xe
 
-export PATH=/bin:/usr/bin:/usr/local/bin
+export PATH=/bin:/usr/bin:/usr/local/bin:/usr/local/libexec/poudriere
 
 . ${WORKSPACE}/local.conf
 
@@ -13,14 +13,14 @@ CROSSPKGDIR=${PKGBASEDIR}/${JAILNAMEPREFIX}${ARCH}x-${PORTSTREE}
 
 # Find the newest .real-XXXX directory of native-built packages
 LATESTREALDIR=$(find ${PKGDIR}/ -type d -depth 1 -print | \
-		    awk -F'/' '{print $NF}' | \
-		    sort -nr | \
-		    head -n 1)
+                    awk -F'/' '{print $NF}' | \
+                    sort -nr | \
+                    head -n 1)
 # Find the newest .real-XXXX directory of cross-built packages
 LATESTCROSSREALDIR=$(find ${CROSSPKGDIR}/ -type d -depth 1 -print | \
-			 awk -F'/' '{print $NF}' | \
-			 sort -nr | \
-			 head -n 1)
+                         awk -F'/' '{print $NF}' | \
+                         sort -nr | \
+                         head -n 1)
 
 if [ -n "${LATESTCROSSREALDIR}" ]; then
     # Only when there is already one, copy the contents of native-built
@@ -28,7 +28,8 @@ if [ -n "${LATESTCROSSREALDIR}" ]; then
     sudo mkdir -p ${CROSSPKGDIR}/.building
     cd ${PKGDIR}/${LATESTREALDIR}
     for i in "All Latest"; do
-	find ${i} -print -depth | \
-	    sudo cpio -pdam ${CROSSPKGDIR}/.building
+        # find ${i} -print -depth | \
+        #     sudo cpio -pdam ${CROSSPKGDIR}/.building
+        sudo cpdup -i0 x ${i} ${CROSSPKGDIR}/.building/${i}
     done
 fi
