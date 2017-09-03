@@ -2,7 +2,7 @@
 
 export PATH=/bin:/usr/bin:/usr/local/bin
 
-. ${WORKSPACE-.}/local.conf
+. ${WORKSPACE}/local.conf
 
 # Command-line Format:
 # SyncPackages.sh [arch ...]
