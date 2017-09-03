@@ -60,7 +60,7 @@ node {
             }
             currentBuild.result = 'SUCCESS'
         } catch (Exception e) {
-            sh "ssh ${sshUser}@${armv6Host} rm -f ${remoteBinDir}/${scriptName} ${remoteBinDir}/${confName}"
+            sh "ssh ${sshUser}@${armv6Host} rm -f ${remoteBinDir}/${scriptName} ${remoteBinDir}/${confName} ${remoteBinDir}/poudriere.*"
             sh "ssh ${sshUser}@${armv6Host} rmdir ${remoteBinDir} || echo ignore"
             currentBuild.result = 'FAILURE'
             notifySlack(channelName, 'armv6 native', currentBuild.result)
@@ -101,7 +101,7 @@ node {
                 sh "scp ${WORKSPACE}/${scriptName} ${sshUser}@${aarch64Host}:${remoteBinDir}"
                 sh "scp ${WORKSPACE}/${confName} ${sshUser}@${aarch64Host}:${remoteBinDir}"
                 sh "ssh ${sshUser}@${aarch64Host} env WORKSPACE=${remoteBinDir} ${remoteBinDir}/${scriptName} aarch64 native ${buildName}"
-                sh "ssh ${sshUser}@${aarch64Host} rm -f ${remoteBinDir}/${scriptName} ${remoteBinDir}/${confName}"
+                sh "ssh ${sshUser}@${aarch64Host} rm -f ${remoteBinDir}/${scriptName} ${remoteBinDir}/${confName} ${remoteBinDir}/poudriere.*"
                 // Don't treat directory removal failure as stage failure
                 sh "ssh ${sshUser}@${aarch64Host} rmdir ${remoteBinDir} || echo ignore"
             }
