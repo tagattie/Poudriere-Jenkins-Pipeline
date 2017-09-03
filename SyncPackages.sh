@@ -14,7 +14,7 @@ for i in ${ARCHLIST}; do
     arch=$(echo ${i}|sed -e 's/x$//')
     echo "Syncing packages for ${arch} architecture."
     PKGDIR=${PKGBASEDIR}/${JAILNAMEPREFIX}${i}-${PORTSTREE}
-    ABI=FreeBSD:${OSREL}:${arch}
+    ABI=FreeBSD:${MAJORREL}:${arch}
 
     # Sync built packages with www server
     rsync ${DRYRUN_SYNC} -e "ssh -p ${RSYNCPORT}" \
