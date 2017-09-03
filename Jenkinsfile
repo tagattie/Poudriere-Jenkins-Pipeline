@@ -45,8 +45,8 @@ node {
     }
 
     stage('Build packages for armv6 architecture. (Native building)') {
-        def scriptName = BuildPackages.sh
-        def confName = local.conf
+        def scriptName = 'BuildPackages.sh'
+        def confName = 'local.conf'
         try {
             sshagent (credentials: [sshCredential]) {
                 sh "ssh ${sshUser}@${armv6Host} mkdir -p ~/bin"
@@ -92,8 +92,8 @@ node {
     }
 
     stage('Build packages for aarch64 architecture. (Native building)') {
-        def scriptName = BuildPackages.sh
-        def confName = local.conf
+        def scriptName = 'BuildPackages.sh'
+        def confName = 'local.conf'
         try {
             sshagent (credentials: [sshCredential]) {
                 sh "ssh ${sshUser}@${aarch64Host} mkdir -p ~/bin"
