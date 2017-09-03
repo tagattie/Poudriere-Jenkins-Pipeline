@@ -28,7 +28,7 @@ if [ -n "${LATESTCROSSREALDIR}" ]; then
     # directory to a cross building working directory
     sudo mkdir -p ${CROSSPKGDIR}/.building
     cd ${PKGDIR}/${LATESTREALDIR}
-    for i in "All Latest"; do
+    for i in "All" "Latest"; do
         # find ${i} -print -depth | \
         #     sudo cpio -pdam ${CROSSPKGDIR}/.building
         sudo cpdup -i0 x ${i} ${CROSSPKGDIR}/.building/${i}
