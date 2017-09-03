@@ -1,8 +1,9 @@
 #! /bin/sh -xe
 
+export LANG=C
 export PATH=/bin:/usr/bin:/usr/local/bin
 
-. ${WORKSPACE-.}/local.conf
+. ${WORKSPACE:=.}/local.conf
 
 # Command-line format:
 # BuildPackages.sh arch native|cross buildname

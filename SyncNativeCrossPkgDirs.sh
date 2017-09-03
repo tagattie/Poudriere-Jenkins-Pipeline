@@ -1,5 +1,6 @@
 #! /bin/sh -xe
 
+export LANG=C
 export PATH=/bin:/usr/bin:/usr/local/bin:/usr/local/libexec/poudriere
 
 . ${WORKSPACE}/local.conf
