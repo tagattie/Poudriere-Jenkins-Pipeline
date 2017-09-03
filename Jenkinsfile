@@ -141,7 +141,7 @@ node {
         }
     }
     stage('Send notification to Slack.') {
-        notifySlack(channelName, 'finally', curentBuild.result)
+        notifySlack(channelName, 'finally', currentBuild.result)
     }
 }
 
