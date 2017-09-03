@@ -6,6 +6,7 @@
 //
 // sshCredential (credential for logging into the following hosts)
 // sshUser       (user for ssh remote login)
+// remoteBinDir  (directory for storing scripts and configs)
 // armv6Host     (native build host of armv6 packages)
 // aarch64Host   (native build host of aarch64 packages)
 // channelName   (Slack channel for notification use)
@@ -49,18 +50,18 @@ node {
         def confName = 'local.conf'
         try {
             sshagent (credentials: [sshCredential]) {
-                sh "ssh ${sshUser}@${armv6Host} mkdir -p ~/bin"
-                sh "scp ${WORKSPACE}/${scriptName} ${sshUser}@${armv6Host}:~/bin"
-                sh "scp ${WORKSPACE}/${confName} ${sshUser}@${armv6Host}:~/bin"
-                sh "ssh ${sshUser}@${armv6Host} ~/bin/${scriptName} armv6 native ${buildName}"
-                sh "ssh ${sshUser}@${armv6Host} rm -f ~/bin/${scriptName} ~/bin/${confName}"
+                sh "ssh ${sshUser}@${armv6Host} mkdir -p ${remoteBinDir}"
+                sh "scp ${WORKSPACE}/${scriptName} ${sshUser}@${armv6Host}:${remoteBinDir}"
+                sh "scp ${WORKSPACE}/${confName} ${sshUser}@${armv6Host}:${remoteBinDir}"
+                sh "ssh ${sshUser}@${armv6Host} ${remoteBinDir}/${scriptName} armv6 native ${buildName}"
+                sh "ssh ${sshUser}@${armv6Host} rm -f ${remoteBinDir}/${scriptName} ${remoteBinDir}/${confName}"
                 // Don't treat directory removal failure as stage failure
-                sh "ssh ${sshUser}@${armv6Host} rmdir ~/bin || echo ignore"
+                sh "ssh ${sshUser}@${armv6Host} rmdir ${remoteBinDir} || echo ignore"
             }
             currentBuild.result = 'SUCCESS'
         } catch (Exception e) {
-            sh "ssh ${sshUser}@${armv6Host} rm -f ~/bin/${scriptName} ~/bin/${confName}"
-            sh "ssh ${sshUser}@${armv6Host} rmdir ~/bin || echo ignore"
+            sh "ssh ${sshUser}@${armv6Host} rm -f ${remoteBinDir}/${scriptName} ${remoteBinDir}/${confName}"
+            sh "ssh ${sshUser}@${armv6Host} rmdir ${remoteBinDir} || echo ignore"
             currentBuild.result = 'FAILURE'
             notifySlack(channelName, 'armv6 native', currentBuild.result)
         }
@@ -96,18 +97,18 @@ node {
         def confName = 'local.conf'
         try {
             sshagent (credentials: [sshCredential]) {
-                sh "ssh ${sshUser}@${aarch64Host} mkdir -p ~/bin"
-                sh "scp ${WORKSPACE}/${scriptName} ${sshUser}@${aarch64Host}:~/bin"
-                sh "scp ${WORKSPACE}/${confName} ${sshUser}@${aarch64Host}:~/bin"
-                sh "ssh ${sshUser}@${aarch64Host} ~/bin/${scriptName} aarch64 native ${buildName}"
-                sh "ssh ${sshUser}@${aarch64Host} rm -f ~/bin/${scriptName} ~/bin/${confName}"
+                sh "ssh ${sshUser}@${aarch64Host} mkdir -p ${remoteBinDir}"
+                sh "scp ${WORKSPACE}/${scriptName} ${sshUser}@${aarch64Host}:${remoteBinDir}"
+                sh "scp ${WORKSPACE}/${confName} ${sshUser}@${aarch64Host}:${remoteBinDir}"
+                sh "ssh ${sshUser}@${aarch64Host} ${remoteBinDir}/${scriptName} aarch64 native ${buildName}"
+                sh "ssh ${sshUser}@${aarch64Host} rm -f ${remoteBinDir}/${scriptName} ${remoteBinDir}/${confName}"
                 // Don't treat directory removal failure as stage failure
-                sh "ssh ${sshUser}@${aarch64Host} rmdir ~/bin || echo ignore"
+                sh "ssh ${sshUser}@${aarch64Host} rmdir ${remoteBinDir} || echo ignore"
             }
             currentBuild.result = 'SUCCESS'
         } catch (Exception e) {
-            sh "ssh ${sshUser}@${aarch64Host} rm -f ~/bin/${scriptName} ~/bin/${confName}"
-            sh "ssh ${sshUser}@${aarch64Host} rmdir ~/bin || echo ignore"
+            sh "ssh ${sshUser}@${aarch64Host} rm -f ${remoteBinDir}/${scriptName} ${remoteBinDir}/${confName}"
+            sh "ssh ${sshUser}@${aarch64Host} rmdir ${remoteBinDir} || echo ignore"
             currentBuild.result = 'FAILURE'
             notifySlack(channelName, 'aarch64 native', currentBuild.result)
         }
