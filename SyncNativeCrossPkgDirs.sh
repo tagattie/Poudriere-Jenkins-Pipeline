@@ -13,5 +13,5 @@ CROSSPKGDIR=${PKGBASEDIR}/${JAILNAMEPREFIX}${ARCH}x-${PORTSTREE}
 
 # Simply sync contents of native and cross package directories
 # (Sync direction is cross pkg dir -> native pkg dir.)
-rsync ${DRYRUN_COPY} -av --info=STATS3 --delete --stats \
+sudo rsync ${DRYRUN_COPY} -av --info=STATS3 --delete --stats \
     ${CROSSPKGDIR}/ ${NATIVEPKGDIR}
