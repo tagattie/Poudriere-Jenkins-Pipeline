@@ -45,12 +45,20 @@ node {
     }
 
     stage('Build packages for armv6 architecture. (Native building)') {
+        def scriptName = BuildPackages.sh
         try {
             sshagent (credentials: [sshCredential]) {
-                sh "ssh ${sshUser}@${armv6Host} /root/bin/BuildPackages.sh armv6 native ${buildName}"
+                sh "ssh ${sshUser}@${armv6Host} mkdir -p ~/bin"
+                sh "scp ${WORKSPACE}/${scriptName} ${sshUser}@${armv6Host}:~/bin"
+                sh "ssh ${sshUser}@${armv6Host} ~/bin/${scriptName} armv6 native ${buildName}"
+                sh "ssh ${sshUser}@${armv6Host} rm -f ~/bin/${scriptName}"
+                // Don't treat directory removal failure as stage failure
+                sh "ssh ${sshUser}@${armv6Host} rmdir ~/bin || ESTAT=${?}"
             }
             currentBuild.result = 'SUCCESS'
         } catch (Exception e) {
+            sh "ssh ${sshUser}@${armv6Host} rm -f ~/bin/${scriptName}"
+            sh "ssh ${sshUser}@${armv6Host} rmdir ~/bin || ESTAT=${?}"
             currentBuild.result = 'FAILURE'
             notifySlack(channelName, 'armv6 native', currentBuild.result)
         }
@@ -82,12 +90,20 @@ node {
     }
 
     stage('Build packages for aarch64 architecture. (Native building)') {
+        def scriptName = BuildPackages.sh
         try {
             sshagent (credentials: [sshCredential]) {
-                sh "ssh ${sshUser}@${aarch64Host} /root/bin/BuildPackages.sh aarch64 native ${buildName}"
+                sh "ssh ${sshUser}@${aarch64Host} mkdir -p ~/bin"
+                sh "scp ${WORKSPACE}/${scriptName} ${sshUser}@${aarch64Host}:~/bin"
+                sh "ssh ${sshUser}@${aarch64Host} ~/bin/${scriptName} aarch64 native ${buildName}"
+                sh "ssh ${sshUser}@${aarch64Host} rm -f ~/bin/${scriptName}"
+                // Don't treat directory removal failure as stage failure
+                sh "ssh ${sshUser}@${aarch64Host} rmdir ~/bin || ESTAT=${?}"
             }
             currentBuild.result = 'SUCCESS'
         } catch (Exception e) {
+            sh "ssh ${sshUser}@${aarch64Host} rm -f ~/bin/${scriptName}"
+            sh "ssh ${sshUser}@${aarch64Host} rmdir ~/bin || ESTAT=${?}"
             currentBuild.result = 'FAILURE'
             notifySlack(channelName, 'aarch64 native', currentBuild.result)
         }
