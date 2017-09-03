@@ -15,4 +15,4 @@ CROSSPKGDIR=${PKGBASEDIR}/${JAILNAMEPREFIX}${ARCH}x-${PORTSTREE}
 # (Sync direction is cross pkg dir -> native pkg dir.)
 # sudo rsync ${DRYRUN_COPY} -av --info=STATS3 --delete --stats \
 #     ${CROSSPKGDIR}/ ${NATIVEPKGDIR}
-cpdup ${DRYRUN_COPY} -i0 -x -I ${CROSSPKGDIR} ${NATIVEPKGDIR}
+sudo cpdup ${DRYRUN_COPY} -i0 -x -I ${CROSSPKGDIR} ${NATIVEPKGDIR}
