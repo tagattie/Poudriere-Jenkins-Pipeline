@@ -31,6 +31,6 @@ if [ -n "${LATESTCROSSREALDIR}" ]; then
     for i in "All" "Latest"; do
         # find ${i} -print -depth | \
         #     sudo cpio -pdam ${CROSSPKGDIR}/.building
-        sudo cpdup -i0 x ${i} ${CROSSPKGDIR}/.building/${i}
+        sudo cpdup -i0 -x ${i} ${CROSSPKGDIR}/.building/${i}
     done
 fi
