@@ -72,6 +72,14 @@ node {
             notifySlack(channelName, 'armv6 cross', currentBuild.result)
         }
     }
+    stage('Sync armv6 native and cross-built package directories.') {
+        try {
+            sh "${WORKSPACE}/SyncNativeCrossPkgDirs.sh armv6"
+            currentBuild.result = 'SUCCESS'
+        } catch (Exception e) {
+            currentBuild.result = 'FAILURE'
+        }
+    }
 
     stage('Build packages for aarch64 architecture. (Native building)') {
         try {
@@ -99,6 +107,14 @@ node {
         } catch (Exception e) {
             currentBuild.result = 'FAILURE'
             notifySlack(channelName, 'aarch64 native', currentBuild.result)
+        }
+    }
+    stage('Sync aarch64 native and cross-built package directories.') {
+        try {
+            sh "${WORKSPACE}/SyncNativeCrossPkgDirs.sh aarch64"
+            currentBuild.result = 'SUCCESS'
+        } catch (Exception e) {
+            currentBuild.result = 'FAILURE'
         }
     }
 
