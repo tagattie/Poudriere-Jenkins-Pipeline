@@ -17,8 +17,8 @@ for i in ${ARCHLIST}; do
     ABI=FreeBSD:${OSREL}:${arch}
 
     # Sync built packages with www server
-    rsync ${DRYRUN} -e "ssh -p ${RSYNCPORT}" \
-	  -a --info=STATS3 --delete --stats \
-	  ${PKGDIR}/ \
-	  ${RSYNCUSER}@${RSYNCHOST}:${RSYNCBASE}/${ABI}
+    rsync ${DRYRUN_SYNC} -e "ssh -p ${RSYNCPORT}" \
+        -a --info=STATS3 --delete --stats \
+        ${PKGDIR}/ \
+        ${RSYNCUSER}@${RSYNCHOST}:${RSYNCBASE}/${ABI}
 done
