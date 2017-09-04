@@ -127,7 +127,7 @@ node {
             currentBuild.result = 'SUCCESS'
         } catch (Exception e) {
             currentBuild.result = 'FAILURE'
-            notifySlack(channelName, 'aarch64 native', currentBuild.result)
+            notifySlack(channelName, 'aarch64 cross', currentBuild.result)
         }
     }
     stage('Sync aarch64 native and cross-built package directories.') {
