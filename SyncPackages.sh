@@ -3,8 +3,6 @@
 export LANG=C
 export PATH=/bin:/usr/bin:/usr/local/bin
 
-. ${WORKSPACE}/local.conf
-
 # Command-line Format:
 # SyncPackages.sh [arch ...]
 if [ $# -ne 0 ]; then
@@ -17,9 +15,8 @@ for i in ${ARCHLIST}; do
     PKGDIR=${PKGBASEDIR}/${JAILNAMEPREFIX}${i}-${PORTSTREE}
     ABI=FreeBSD:${MAJORREL}:${arch}
 
-    # Sync built packages with www server
-    rsync ${DRYRUN_SYNC} -e "ssh -p ${RSYNCPORT}" \
+    rsync ${DRYRUN_SYNC} -e "ssh -p ${syncPort}" \
         -a --info=STATS3 --delete --stats \
         ${PKGDIR}/ \
-        ${RSYNCUSER}@${RSYNCHOST}:${RSYNCBASE}/${ABI}
+        ${syncUser}@${syncHost}:${syncBase}/${ABI}
 done
