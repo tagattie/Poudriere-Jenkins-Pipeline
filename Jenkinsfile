@@ -84,6 +84,11 @@ pipeline {
             steps {
                 sh "${WORKSPACE}/UpdateTree.sh"
             }
+            post {
+                failure {
+                    notifySlack(SLACKCHANNELNAME, "${stageName}", 'FAILURE')
+                }
+            }
         }
 
         stage('Build packages for amd64 architecture.') {
