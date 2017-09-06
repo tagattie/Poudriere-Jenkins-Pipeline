@@ -283,7 +283,8 @@ pipeline {
 
 def notifySlack(String channelName = '#jenkins',
                 String stageName = '',
-                String buildStatus) {
+                String buildStatus,
+                String url = "${env.BUILD_URL}console") {
 
     def colorCode, statusString
 
@@ -304,7 +305,7 @@ def notifySlack(String channelName = '#jenkins',
         statusString = 'unknown'
     }
 
-    def message = "Build ${stageName} ${statusString} - ${env.JOB_NAME} #${env.BUILD_NUMBER} (<${env.BUILD_URL}console|Open>)"
+    def message = "Build stage \"${stageName}\" ${statusString} - ${env.JOB_NAME} #${env.BUILD_NUMBER} (<${url}|Open>)"
 
     slackSend channel: channelName, color: colorCode, message: message
 }
