@@ -69,7 +69,7 @@ pipeline {
     stages {
         stage('Checkout Jenkinsfile and other files.') {
             steps {
-//            checkout scm
+                checkout scm
                 notifySlack(SLACKCHANNELNAME, '', 'START')
             }
         }
@@ -265,10 +265,10 @@ pipeline {
     }
 
     post {
-            // always {
-            //     // Clean up (= delete) workspace directory
-            //     deleteDir()
-            // }
+        always {
+            // Clean up (= delete) workspace directory
+            deleteDir()
+        }
         success {
             notifySlack(SLACKCHANNELNAME, '', 'SUCCESS')
         }
