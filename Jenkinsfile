@@ -163,8 +163,11 @@ ssh ${sshUser}@${armv6Host} \\
             }
             post {
                 failure {
-                    sh "ssh ${sshUser}@${armv6Host} rm -f ${remoteBinDir}/${BUILDSCRIPT} ${remoteBinDir}/poudriere.*"
-                    sh "ssh ${sshUser}@${armv6Host} rmdir ${remoteBinDir} || echo ignore"
+                    sh """
+ssh ${sshUser}@${armv6Host} \\
+    rm -f ${remoteBinDir}/\${BUILDSCRIPT} ${remoteBinDir}/poudriere.*; \\
+    rmdir ${remoteBinDir} || echo ignore
+"""
                     notifySlack(SLACKCHANNELNAME, 'stage Build armv6 Packages (Native)', "${currentBuild.result}")
                 }
             }
@@ -260,8 +263,11 @@ ssh ${sshUser}@${aarch64Host} \\
             }
             post {
                 failure {
-                    sh "ssh ${sshUser}@${aarch64Host} rm -f ${remoteBinDir}/${scriptName} ${remoteBinDir}/poudriere.*"
-                    sh "ssh ${sshUser}@${aarch64Host} rmdir ${remoteBinDir} || echo ignore"
+                    sh """
+ssh ${sshUser}@${aarch64Host} \\
+    rm -f ${remoteBinDir}/\${BUILDSCRIPT} ${remoteBinDir}/poudriere.*; \\
+    rmdir ${remoteBinDir} || echo ignore
+"""
                     notifySlack(SLACKCHANNELNAME, 'stage Build armv6 Packages (Native)', "${currentBuild.result}")
                 }
             }
