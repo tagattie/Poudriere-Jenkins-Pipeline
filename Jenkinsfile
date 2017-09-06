@@ -380,6 +380,16 @@ ssh ${sshUser}@${aarch64Host} \\
         always {
             // Clean up (= delete) workspace directory
             deleteDir()
+            echo "currentBuild.number: ${currentBuild.number}"
+            echo "currentBuild.result: ${currentBuild.result}"
+            echo "currentBuild.currentResult: ${currentBuild.currentResult}"
+            echo "currentBuild.displayName: ${currentBuild.displayName}"
+            echo "currentBuild.description: ${currentBuild.description}"
+            echo "currentBuild.id: ${currentBuild.id}"
+            echo "currentBuild.timeInMillis: ${currentBuild.timeInMillis}"
+            echo "currentBuild.startTimeInMillis: ${currentBuild.startTimeInMillis}"
+            echo "currentBuild.duration: ${currentBuild.duration}"
+            echo "currentBuild.durationString: ${currentBuild.durationString}"
         }
         success {
             notifySlack(SLACKCHANNELNAME, '', "${currentBuild.result}")
