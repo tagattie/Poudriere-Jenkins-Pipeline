@@ -295,9 +295,13 @@ def notifySlack(String channelName = '#jenkins',
         colorCode = '#008800' // green
         statusString = 'successful'
     }
-    else {
+    else if (buildStatus == 'FAILURE') {
         colorCode = '#BB0000' // red
         statusString = 'failed'
+    }
+    else {
+        colorCode = '#000000' // black
+        statusString = 'unknown'
     }
 
     def message = "Build ${stageName} ${statusString} - ${env.JOB_NAME} #${env.BUILD_NUMBER} (<${env.BUILD_URL}console|Open>)"
