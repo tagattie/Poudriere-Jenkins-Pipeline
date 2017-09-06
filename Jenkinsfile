@@ -122,7 +122,7 @@ pipeline {
                 sshagent (credentials: [sshCredential]) {
                     sh "ssh ${sshUser}@${armv6Host} mkdir -p ${remoteBinDir}"
                     sh "scp ${WORKSPACE}/${BUILDSCRIPT} ${sshUser}@${armv6Host}:${remoteBinDir}"
-                    sh "ssh ${sshUser}@${armv6Host} env WORKSPACE=${remoteBinDir} PORTSTREE=${PORTSTREE} DRYRUN_BUILD=${DRYRUN_BUILD} ${remoteBinDir}/${BUILDSCRIPT} armv6 native ${BUILDNAME} ${JAILNAMEPREFIX} ${PKGLISTDIR}"
+                    sh "ssh ${sshUser}@${armv6Host} env WORKSPACE=${remoteBinDir} PORTSTREE=${PORTSTREE} DRYRUN_BUILD=${DRYRUN_BUILD} VERBOSE_BUILD=${VERBOSE_BUILD} ${remoteBinDir}/${BUILDSCRIPT} armv6 native ${BUILDNAME} ${JAILNAMEPREFIX} ${PKGLISTDIR}"
                     sh "ssh ${sshUser}@${armv6Host} rm -f ${remoteBinDir}/${BUILDSCRIPT}"
                     // Don't treat directory removal failure as stage failure
                     sh "ssh ${sshUser}@${armv6Host} rmdir ${remoteBinDir} || echo ignore"
@@ -184,7 +184,7 @@ pipeline {
                 sshagent (credentials: [sshCredential]) {
                     sh "ssh ${sshUser}@${aarch64Host} mkdir -p ${remoteBinDir}"
                     sh "scp ${WORKSPACE}/${BUILDSCRIPT} ${sshUser}@${aarch64Host}:${remoteBinDir}"
-                    sh "ssh ${sshUser}@${aarch64Host} env WORKSPACE=${remoteBinDir} PORTSTREE=${PORTSTREE} DRYRUN_BUILD=${DRYRUN_BUILD} ${remoteBinDir}/${BUILDSCRIPT} aarch64 native ${BUILDNAME} ${JAILNAMEPREFIX} ${PKGLISTDIR}"
+                    sh "ssh ${sshUser}@${aarch64Host} env WORKSPACE=${remoteBinDir} PORTSTREE=${PORTSTREE} DRYRUN_BUILD=${DRYRUN_BUILD} VERBOSE_BUILD=${VERBOSE_BUILD} ${remoteBinDir}/${BUILDSCRIPT} aarch64 native ${BUILDNAME} ${JAILNAMEPREFIX} ${PKGLISTDIR}"
                     sh "ssh ${sshUser}@${aarch64Host} rm -f ${remoteBinDir}/${BUILDSCRIPT}"
                     // Don't treat directory removal failure as stage failure
                     sh "ssh ${sshUser}@${aarch64Host} rmdir ${remoteBinDir} || echo ignore"
