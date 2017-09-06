@@ -86,7 +86,7 @@ pipeline {
             }
             post {
                 failure {
-                    notifySlack(SLACKCHANNELNAME, "${stageName}", 'FAILURE')
+                    notifySlack(SLACKCHANNELNAME, 'stage Update Ports Tree', "${currentBuild.result}")
                 }
             }
         }
@@ -101,13 +101,13 @@ pipeline {
                         sh "${WORKSPACE}/${BUILDSCRIPT} amd64 native ${BUILDNAME} ${JAILNAMEPREFIX} ${PKGLISTDIR}"
                     } catch (Exception e) {
                         currentBuild.currentResult = 'FAILURE'
-                        notifySlack(SLACKCHANNELNAME, 'stage Build amd64 Packages', currentBuild.currentResult)
+                        notifySlack(SLACKCHANNELNAME, 'stage Build amd64 Packages', "${currentBuild.currentResult}")
                     }
                 }
             }
             post {
                 failure {
-                    notifySlack(SLACKCHANNELNAME, 'amd64', 'FAILURE')
+                    notifySlack(SLACKCHANNELNAME, 'stage Build amd64 Packages', "${currentBuild.result}")
                 }
             }
         }
@@ -122,13 +122,13 @@ pipeline {
                         sh "${WORKSPACE}/${BUILDSCRIPT} i386 native ${BUILDNAME} ${JAILNAMEPREFIX} ${PKGLISTDIR}"
                     } catch (Exception e) {
                         currentBuild.currentResult = 'FAILURE'
-                        notifySlack(SLACKCHANNELNAME, 'stage Build i386 Packages', currentBuild.currentResult)
+                        notifySlack(SLACKCHANNELNAME, 'stage Build i386 Packages', "${currentBuild.currentResult}")
                     }
                 }
             }
             post {
                 failure {
-                    notifySlack(SLACKCHANNELNAME, 'i386', 'FAILURE')
+                    notifySlack(SLACKCHANNELNAME, 'stage Build i386 Packages', "${currentBuild.result}")
                 }
             }
         }
@@ -157,7 +157,7 @@ ssh ${sshUser}@${armv6Host} \\
     rmdir ${remoteBinDir} || echo ignore
 """
                         currentBuild.currentResult = 'FAILURE'
-                        notifySlack(SLACKCHANNELNAME, 'stage Build armv6 Packages (Native)', currentBuild.currentResult)
+                        notifySlack(SLACKCHANNELNAME, 'stage Build armv6 Packages (Native)', "${currentBuild.currentResult}")
                     }
                 }
             }
@@ -165,7 +165,7 @@ ssh ${sshUser}@${armv6Host} \\
                 failure {
                     sh "ssh ${sshUser}@${armv6Host} rm -f ${remoteBinDir}/${BUILDSCRIPT} ${remoteBinDir}/poudriere.*"
                     sh "ssh ${sshUser}@${armv6Host} rmdir ${remoteBinDir} || echo ignore"
-                    notifySlack(SLACKCHANNELNAME, 'armv6 native build', 'FAILURE')
+                    notifySlack(SLACKCHANNELNAME, 'stage Build armv6 Packages (Native)', "${currentBuild.result}")
                 }
             }
         }
@@ -179,13 +179,13 @@ ssh ${sshUser}@${armv6Host} \\
                         sh "${WORKSPACE}/CopyPackages.sh armv6"
                     } catch (Exception e) {
                         currentBuild.currentResult = 'FAILURE'
-                        notifySlack(SLACKCHANNELNAME, 'stage Copy armv6 Native -> Cross Directory', currentBuild.currentResult)
+                        notifySlack(SLACKCHANNELNAME, 'stage Copy armv6 Native -> Cross Directory', "${currentBuild.currentResult}")
                     }
                 }
             }
             post {
                 failure {
-                    notifySlack(SLACKCHANNELNAME, 'armv6 copy native -> cross', 'FAILURE')
+                    notifySlack(SLACKCHANNELNAME, 'stage Copy armv6 Native -> Cross Directory', "${currentBuild.result}")
                 }
             }
         }
@@ -199,13 +199,13 @@ ssh ${sshUser}@${armv6Host} \\
                         sh "${WORKSPACE}/${BUILDSCRIPT} armv6 cross ${BUILDNAME} ${JAILNAMEPREFIX} ${PKGLISTDIR}"
                     } catch (Exception e) {
                         currentBuild.currentResult = 'FAILURE'
-                        notifySlack(SLACKCHANNELNAME, 'stage Build armv6 Packages (Cross)', currentBuild.currentResult)
+                        notifySlack(SLACKCHANNELNAME, 'stage Build armv6 Packages (Cross)', "${currentBuild.currentResult}")
                     }
                 }
             }
             post {
                 failure {
-                    notifySlack(SLACKCHANNELNAME, 'armv6 cross', 'FAILURE')
+                    notifySlack(SLACKCHANNELNAME, 'stage Build armv6 Packages (Cross)', "${currentBuild.result}")
                 }
             }
         }
@@ -219,13 +219,13 @@ ssh ${sshUser}@${armv6Host} \\
                         sh "${WORKSPACE}/SyncNativeCrossPkgDirs.sh armv6"
                     } catch (Exception e) {
                         currentBuild.currentResult = 'FAILURE'
-                        notifySlack(SLACKCHANNELNAME, 'stage Sync armv6 Cross -> Native Directory', currentBuild.currentResult)
+                        notifySlack(SLACKCHANNELNAME, 'stage Sync armv6 Cross -> Native Directory', "${currentBuild.currentResult}")
                     }
                 }
             }
             post {
                 failure {
-                    notifySlack(SLACKCHANNELNAME, 'armv6 copy cross -> native', 'FAILURE')
+                    notifySlack(SLACKCHANNELNAME, 'stage Sync armv6 Cross -> Native Directory', "${currentBuild.result}")
                 }
             }
         }
@@ -254,7 +254,7 @@ ssh ${sshUser}@${aarch64Host} \\
     rmdir ${remoteBinDir} || echo ignore
 """
                         currentBuild.currentResult = 'FAILURE'
-                        notifySlack(SLACKCHANNELNAME, 'stage Build aarch64 Packages (Native)', currentBuild.currentResult)
+                        notifySlack(SLACKCHANNELNAME, 'stage Build aarch64 Packages (Native)', "${currentBuild.currentResult}")
                     }
                 }
             }
@@ -262,7 +262,7 @@ ssh ${sshUser}@${aarch64Host} \\
                 failure {
                     sh "ssh ${sshUser}@${aarch64Host} rm -f ${remoteBinDir}/${scriptName} ${remoteBinDir}/poudriere.*"
                     sh "ssh ${sshUser}@${aarch64Host} rmdir ${remoteBinDir} || echo ignore"
-                    notifySlack(SLACKCHANNELNAME, 'aarch64 native', 'FAILURE')
+                    notifySlack(SLACKCHANNELNAME, 'stage Build armv6 Packages (Native)', "${currentBuild.result}")
                 }
             }
         }
@@ -276,13 +276,13 @@ ssh ${sshUser}@${aarch64Host} \\
                         sh "${WORKSPACE}/CopyPackages.sh aarch64"
                     } catch (Exception e) {
                         currentBuild.currentResult = 'FAILURE'
-                        notifySlack(SLACKCHANNELNAME, 'stage Copy aarch64 Native -> Cross Directory', currentBuild.currentResult)
+                        notifySlack(SLACKCHANNELNAME, 'stage Copy aarch64 Native -> Cross Directory', "${currentBuild.currentResult}")
                     }
                 }
             }
             post {
                 failure {
-                    notifySlack(SLACKCHANNELNAME, 'aarch64 copy native -> cross', 'FAILURE')
+                    notifySlack(SLACKCHANNELNAME, 'stage Copy aarch64 Native -> Cross Directory', "${currentBuild.result}")
                 }
             }
         }
@@ -296,13 +296,13 @@ ssh ${sshUser}@${aarch64Host} \\
                         sh "${WORKSPACE}/${BUILDSCRIPT} aarch64 cross ${BUILDNAME} ${JAILNAMEPREFIX} ${PKGLISTDIR}"
                     } catch (Exception e) {
                         currentBuild.currentResult = 'FAILURE'
-                        notifySlack(SLACKCHANNELNAME, 'stage Build aarch64 Packages (Cross)', currentBuild.currentResult)
+                        notifySlack(SLACKCHANNELNAME, 'stage Build aarch64 Packages (Cross)', "${currentBuild.currentResult}")
                     }
                 }
             }
             post {
                 failure {
-                    notifySlack(SLACKCHANNELNAME, 'aarch64 cross', 'FAILURE')
+                    notifySlack(SLACKCHANNELNAME, 'stage Build aarch64 Packages (Cross)', "${currentBuild.result}")
                 }
             }
         }
@@ -316,13 +316,13 @@ ssh ${sshUser}@${aarch64Host} \\
                         sh "${WORKSPACE}/SyncNativeCrossPkgDirs.sh aarch64"
                     } catch (Exception e) {
                         currentBuild.currentResult = 'FAILURE'
-                        notifySlack(SLACKCHANNELNAME, 'stage Sync aarch64 Cross -> Native Directory', currentBuild.currentResult)
+                        notifySlack(SLACKCHANNELNAME, 'stage Sync aarch64 Cross -> Native Directory', "${currentBuild.currentResult}")
                     }
                 }
             }
             post {
                 failure {
-                    notifySlack(SLACKCHANNELNAME, 'aarch64 copy cross -> native', 'FAILURE')
+                    notifySlack(SLACKCHANNELNAME, 'stage Sync aarch64 Cross -> Native Directory', "${currentBuild.result}")
                 }
             }
         }
@@ -337,13 +337,13 @@ ssh ${sshUser}@${aarch64Host} \\
                         sh "${WORKSPACE}/${BUILDSCRIPT} mips64 cross ${BUILDNAME} ${JAILNAMEPREFIX} ${PKGLISTDIR}"
                     } catch (Exception e) {
                         currentBuild.currentResult = 'FAILURE'
-                        notifySlack(SLACKCHANNELNAME, 'stage Build mips64 Packages (Cross)', currentBuild.currentResult)
+                        notifySlack(SLACKCHANNELNAME, 'stage Build mips64 Packages (Cross)', "${currentBuild.currentResult}")
                     }
                 }
             }
             post {
                 failure {
-                    notifySlack(SLACKCHANNELNAME, 'mips64 cross', 'FAILURE')
+                    notifySlack(SLACKCHANNELNAME, 'stage Build armv6 Packages (Cross)', "${currentBuild.result}")
                 }
             }
         }
@@ -358,13 +358,13 @@ ssh ${sshUser}@${aarch64Host} \\
                         sh "${WORKSPACE}/SyncPackages.sh"
                     } catch (Exception e) {
                         currentBuild.currentResult = 'FAILURE'
-                        notifySlack(SLACKCHANNELNAME, 'stage Sync', currentBuild.currentResult)
+                        notifySlack(SLACKCHANNELNAME, 'stage Sync', "${currentBuild.currentResult}")
                     }
                 }
             }
             post {
                 failure {
-                    notifySlack(SLACKCHANNELNAME, 'sync', 'FAILURE')
+                    notifySlack(SLACKCHANNELNAME, 'stage Sync', "${currentBuild.result}")
                 }
             }
         }
@@ -376,10 +376,10 @@ ssh ${sshUser}@${aarch64Host} \\
             deleteDir()
         }
         success {
-            notifySlack(SLACKCHANNELNAME, '', 'SUCCESS')
+            notifySlack(SLACKCHANNELNAME, '', "${currentBuild.result}")
         }
         failure {
-            notifySlack(SLACKCHANNELNAME, '', 'FAILURE')
+            notifySlack(SLACKCHANNELNAME, '', "${currentBuild.result}")
         }
     }
 }
