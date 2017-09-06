@@ -338,7 +338,7 @@ ssh ${sshUser}@${aarch64Host} \\
             }
             post {
                 failure {
-                    notifySlack(SLACKCHANNELNAME, 'stage Build armv6 Packages (Cross)', "${currentBuild.currentResult}")
+                    notifySlack(SLACKCHANNELNAME, 'stage Build mips64 Packages (Cross)', "${currentBuild.currentResult}")
                 }
             }
         }
