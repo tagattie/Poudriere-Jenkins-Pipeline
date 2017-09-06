@@ -14,23 +14,24 @@
 // syncPort      (port for ssh remote login to pkg serving host)
 // syncBase      (base directory for storing packages)
 // poudriereUrl  (URL of poudriere build logs)
+//
+// Parameters for debugging
+// doUpdate
+// doBuild
+// doCopy
+// doSync
+// dryRunUpdate
+// dryRunBuild
+// dryRunCopy
+// dryRunSync
+// verboseBuild
+// verboseCopy
+// verboseSync
 ////////
 
 pipeline {
     agent any
     environment {
-        // For debugging
-        DO_UPDATE='y'
-        DO_BUILD='y'
-        DO_COPY='y'
-        DO_SYNC='y'
-        DRYRUN_UPDATE='n'
-        DRYRUN_BUILD='n'
-        DRYRUN_COPY='n'
-        DRYRUN_SYNC='n'
-        VERBOSE_BUILD='y'
-        VERBOSE_COPY='y'
-        VERBOSE_SYNC='y'
         // Script for package building
         BUILDSCRIPT='BuildPackages.sh'
         // Ports tree name which poudriere will work on
@@ -80,7 +81,7 @@ pipeline {
 
         stage('Update ports tree.') {
             when {
-                environment name: 'DO_UPDATE', value: 'y'
+                environment name: 'doUpdate', value: 'y'
             }
             steps {
                 sh "${WORKSPACE}/UpdateTree.sh"
@@ -94,7 +95,7 @@ pipeline {
 
         stage('Build packages for amd64 architecture.') {
             when {
-                environment name: 'DO_BUILD', value: 'y'
+                environment name: 'doBuild', value: 'y'
             }
             steps {
                 script {
@@ -114,7 +115,7 @@ pipeline {
 
         stage('Build packages for i386 architecture.') {
             when {
-                environment name: 'DO_BUILD', value: 'y'
+                environment name: 'doBuild', value: 'y'
             }
             steps {
                 script {
@@ -134,7 +135,7 @@ pipeline {
 
         stage('Build packages for armv6 architecture. (Native building)') {
             when {
-                environment name: 'DO_BUILD', value: 'y'
+                environment name: 'doBuild', value: 'y'
             }
             steps {
                 script {
@@ -144,7 +145,7 @@ pipeline {
 ssh ${sshUser}@${armv6Host} mkdir -p ${remoteBinDir}
 scp ${WORKSPACE}/\${BUILDSCRIPT} ${sshUser}@${armv6Host}:${remoteBinDir}
 ssh ${sshUser}@${armv6Host} \\
-    env WORKSPACE=${remoteBinDir} PORTSTREE=${PORTSTREE} DRYRUN_BUILD=${DRYRUN_BUILD} VERBOSE_BUILD=${VERBOSE_BUILD} ${remoteBinDir}/\${BUILDSCRIPT} armv6 native ${BUILDNAME} ${JAILNAMEPREFIX} ${PKGLISTDIR}; \\
+    env WORKSPACE=${remoteBinDir} PORTSTREE=${PORTSTREE} dryRunBuild=${dryRunBuild} verboseBuild=${verboseBuild} ${remoteBinDir}/\${BUILDSCRIPT} armv6 native ${BUILDNAME} ${JAILNAMEPREFIX} ${PKGLISTDIR}; \\
     rm -f ${remoteBinDir}/\${BUILDSCRIPT}; \\
     rmdir ${remoteBinDir} || echo ignore
 """
@@ -172,7 +173,7 @@ ssh ${sshUser}@${armv6Host} \\
         }
         stage('Copy armv6 natively-built packages to cross-build working directory.') {
             when {
-                environment name: 'DO_COPY', value: 'y'
+                environment name: 'doCopy', value: 'y'
             }
             steps {
                 script {
@@ -191,7 +192,7 @@ ssh ${sshUser}@${armv6Host} \\
         }
         stage('Build packages for armv6 architecture. (Cross building)') {
             when {
-                environment name: 'DO_BUILD', value: 'y'
+                environment name: 'doBuild', value: 'y'
             }
             steps {
                 script {
@@ -210,7 +211,7 @@ ssh ${sshUser}@${armv6Host} \\
         }
         stage('Sync armv6 native and cross-built package directories.') {
             when {
-                environment name: 'DO_COPY', value: 'y'
+                environment name: 'doCopy', value: 'y'
             }
             steps {
                 script {
@@ -230,7 +231,7 @@ ssh ${sshUser}@${armv6Host} \\
 
         stage('Build packages for aarch64 architecture. (Native building)') {
             when {
-                environment name: 'DO_BUILD', value: 'y'
+                environment name: 'doBuild', value: 'y'
             }
             steps {
                 script {
@@ -240,7 +241,7 @@ ssh ${sshUser}@${armv6Host} \\
 ssh ${sshUser}@${aarch64Host} mkdir -p ${remoteBinDir}
 scp ${WORKSPACE}/\${BUILDSCRIPT} ${sshUser}@${aarch64Host}:${remoteBinDir}
 ssh ${sshUser}@${aarch64Host} \\
-    env WORKSPACE=${remoteBinDir} PORTSTREE=${PORTSTREE} DRYRUN_BUILD=${DRYRUN_BUILD} VERBOSE_BUILD=${VERBOSE_BUILD} ${remoteBinDir}/\${BUILDSCRIPT} aarch64 native ${BUILDNAME} ${JAILNAMEPREFIX} ${PKGLISTDIR}; \\
+    env WORKSPACE=${remoteBinDir} PORTSTREE=${PORTSTREE} dryRunBuild=${dryRunBuild} verboseBuild=${verboseBuild} ${remoteBinDir}/\${BUILDSCRIPT} aarch64 native ${BUILDNAME} ${JAILNAMEPREFIX} ${PKGLISTDIR}; \\
     rm -f ${remoteBinDir}/\${BUILDSCRIPT}; \\
     rmdir ${remoteBinDir} || echo ignore
 """
@@ -268,7 +269,7 @@ ssh ${sshUser}@${aarch64Host} \\
         }
         stage('Copy aarch64 natively-built packages to cross-build working directory.') {
             when {
-                environment name: 'DO_COPY', value: 'y'
+                environment name: 'doCopy', value: 'y'
             }
             steps {
                 script {
@@ -287,7 +288,7 @@ ssh ${sshUser}@${aarch64Host} \\
         }
         stage('Build packages for aarch64 architecture. (Cross building)') {
             when {
-                environment name: 'DO_BUILD', value: 'y'
+                environment name: 'doBuild', value: 'y'
             }
             steps {
                 script {
@@ -306,7 +307,7 @@ ssh ${sshUser}@${aarch64Host} \\
         }
         stage('Sync aarch64 native and cross-built package directories.') {
             when {
-                environment name: 'DO_COPY', value: 'y'
+                environment name: 'doCopy', value: 'y'
             }
             steps {
                 script {
@@ -326,7 +327,7 @@ ssh ${sshUser}@${aarch64Host} \\
 
         stage('Build packages for mips64 architecture. (Cross building)') {
             when {
-                environment name: 'DO_BUILD', value: 'y'
+                environment name: 'doBuild', value: 'y'
             }
             steps {
                 script {
@@ -346,7 +347,7 @@ ssh ${sshUser}@${aarch64Host} \\
 
         stage('Sync built artifact with package servering host.') {
             when {
-                environment name: 'DO_SYNC', value: 'y'
+                environment name: 'doSync', value: 'y'
             }
             steps {
                 script {

@@ -23,10 +23,10 @@ LATESTCROSSREALDIR=$(find ${CROSSPKGDIR}/ -type d -depth 1 -print | \
                          head -n 1)
 
 # Copy natively-built packages to cross-build directory
-if [ "${DRYRUN_COPY}" == "y" ]; then
+if [ "${dryRunCopy}" == "y" ]; then
     DRYRUN_FLAG="-n"
 fi
-if  [ "${VERBOSE_COPY}" == "y" ]; then
+if  [ "${verboseCopy}" == "y" ]; then
     VERBOSE_FLAG="-v"
 fi
 if [ -n "${LATESTCROSSREALDIR}" ]; then

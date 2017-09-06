@@ -22,10 +22,10 @@ pkgList=$(mktemp ${WORKSPACE}/poudriere.XXXXXX)
 cat ${PKGLIST} > ${pkgList}
 
 # Build the packages
-if [ "${DRYRUN_BUILD}" == "y" ]; then
+if [ "${dryRunBuild}" == "y" ]; then
     DRYRUN_FLAG="-n"
 fi
-if  [ "${VERBOSE_BUILD}" == "y" ]; then
+if  [ "${verboseBuild}" == "y" ]; then
     VERBOSE_FLAG="-v"
 fi
 sudo poudriere bulk ${DRYRUN_FLAG} ${VERBOSE_FLAG} -f ${pkgList} -j ${JAILNAME} -p ${PORTSTREE} -B ${BUILDNAME} || ESTAT=$?

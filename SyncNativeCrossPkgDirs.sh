@@ -13,13 +13,13 @@ CROSSPKGDIR=${PKGBASEDIR}/${JAILNAMEPREFIX}${ARCH}${CROSS}-${PORTSTREE}
 
 # Simply sync contents of native and cross package directories
 # (Sync direction is cross pkg dir -> native pkg dir.)
-if [ "${DRYRUN_COPY}" == "y" ]; then
+if [ "${dryRunCopy}" == "y" ]; then
     DRYRUN_FLAG="-n"
 fi
-if  [ "${VERBOSE_COPY}" == "y" ]; then
+if  [ "${verboseCopy}" == "y" ]; then
     VERBOSE_FLAG="-v"
 fi
 sudo rsync ${DRYRUN_FLAG} ${VERBOSE_FLAG} \
     -a --info=STATS3 --delete --stats \
     ${CROSSPKGDIR}/ ${NATIVEPKGDIR}
-# sudo cpdup ${DRYRUN_COPY} -i0 -x -I ${CROSSPKGDIR} ${NATIVEPKGDIR}
+# sudo cpdup ${DRYRUN_FLAG} -i0 -x -I ${CROSSPKGDIR} ${NATIVEPKGDIR}

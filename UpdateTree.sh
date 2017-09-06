@@ -4,7 +4,7 @@ export LANG=C
 export PATH=/bin:/usr/bin:/usr/local/bin
 
 # Update the ports tree
-if [ "${DRYRUN_UPDATE}" != "y" ]; then
+if [ "${dryRunUpdate}" != "y" ]; then
     # Update the specified ports tree
     sudo poudriere ports -v -u -p ${PORTSTREE}
 else

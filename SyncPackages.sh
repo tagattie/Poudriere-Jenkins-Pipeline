@@ -9,10 +9,10 @@ if [ $# -ne 0 ]; then
     ARCHLIST=$@
 fi
 
-if [ "${DRYRUN_SYNC}" == "y" ]; then
+if [ "${dryRunSync}" == "y" ]; then
     DRYRUN_FLAG="-n"
 fi
-if  [ "${VERBOSE_SYNC}" == "y" ]; then
+if  [ "${verboseSync}" == "y" ]; then
     VERBOSE_FLAG="-v"
 fi
 for i in ${ARCHLIST}; do
