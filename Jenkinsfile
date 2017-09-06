@@ -408,7 +408,7 @@ def notifySlack(String channelName = '#jenkins',
         statusString = 'unknown'
     }
 
-    def message = "Build stage \"${stageName}\" ${statusString} - ${env.JOB_NAME} #${env.BUILD_NUMBER} (<${url}|Open>)"
+    def message = "Build ${stageName} ${statusString} - ${env.JOB_NAME} #${env.BUILD_NUMBER} (<${url}|Open>)"
 
     slackSend channel: channelName, color: colorCode, message: message
 }
