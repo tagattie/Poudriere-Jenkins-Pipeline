@@ -283,7 +283,7 @@ pipeline {
 
 def notifySlack(String channelName = '#jenkins',
                 String stageName = '',
-                String buildStatus = 'START') {
+                String buildStatus) {
 
     def colorCode, statusString
 
