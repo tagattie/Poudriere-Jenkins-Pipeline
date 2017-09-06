@@ -153,7 +153,7 @@ ssh ${sshUser}@${armv6Host} \\
                     } catch (Exception e) {
                         sh """
 ssh ${sshUser}@${armv6Host} \\
-    rm -f ${remoteBinDir}/\${BUILDSCRIPT} ${remoteBinDir}/poudriere.*; \\
+    rm -f ${remoteBinDir}/\${BUILDSCRIPT}; \\
     rmdir ${remoteBinDir} || echo ignore
 """
                         notifySlack(SLACKCHANNELNAME, 'stage Build armv6 Packages (Native)', 'FAILURE', "${poudriereUrl}?mastername=${JAILNAMEPREFIX}armv6-${PORTSTREE}&build=${BUILDNAME}")
@@ -164,7 +164,7 @@ ssh ${sshUser}@${armv6Host} \\
                 failure {
                     sh """
 ssh ${sshUser}@${armv6Host} \\
-    rm -f ${remoteBinDir}/\${BUILDSCRIPT} ${remoteBinDir}/poudriere.*; \\
+    rm -f ${remoteBinDir}/\${BUILDSCRIPT}; \\
     rmdir ${remoteBinDir} || echo ignore
 """
                     notifySlack(SLACKCHANNELNAME, 'stage Build armv6 Packages (Native)', "${currentBuild.currentResult}")
@@ -249,7 +249,7 @@ ssh ${sshUser}@${aarch64Host} \\
                     } catch (Exception e) {
                         sh """
 ssh ${sshUser}@${aarch64Host} \\
-    rm -f ${remoteBinDir}/\${BUILDSCRIPT} ${remoteBinDir}/poudriere.*; \\
+    rm -f ${remoteBinDir}/\${BUILDSCRIPT}; \\
     rmdir ${remoteBinDir} || echo ignore
 """
                         notifySlack(SLACKCHANNELNAME, 'stage Build aarch64 Packages (Native)', 'FAILURE', "${poudriereUrl}?mastername=${JAILNAMEPREFIX}aarch64-${PORTSTREE}&build=${BUILDNAME}")
@@ -260,7 +260,7 @@ ssh ${sshUser}@${aarch64Host} \\
                 failure {
                     sh """
 ssh ${sshUser}@${aarch64Host} \\
-    rm -f ${remoteBinDir}/\${BUILDSCRIPT} ${remoteBinDir}/poudriere.*; \\
+    rm -f ${remoteBinDir}/\${BUILDSCRIPT}; \\
     rmdir ${remoteBinDir} || echo ignore
 """
                     notifySlack(SLACKCHANNELNAME, 'stage Build armv6 Packages (Native)', "${currentBuild.currentResult}")
