@@ -96,7 +96,14 @@ pipeline {
                 environment name: 'DO_BUILD', value: 'y'
             }
             steps {
-                sh "${WORKSPACE}/${BUILDSCRIPT} amd64 native ${BUILDNAME} ${JAILNAMEPREFIX} ${PKGLISTDIR}"
+                script {
+                    try {
+                        sh "${WORKSPACE}/${BUILDSCRIPT} amd64 native ${BUILDNAME} ${JAILNAMEPREFIX} ${PKGLISTDIR}"
+                    } catch (Exception e) {
+                        currentBuild.currentResult = 'FAILURE'
+                        notifySlack(SLACKCHANNELNAME, 'stage Build amd64 Packages', currentBuild.currentResult)
+                    }
+                }
             }
             post {
                 failure {
@@ -110,7 +117,14 @@ pipeline {
                 environment name: 'DO_BUILD', value: 'y'
             }
             steps {
-                sh "${WORKSPACE}/${BUILDSCRIPT} i386 native ${BUILDNAME} ${JAILNAMEPREFIX} ${PKGLISTDIR}"
+                script {
+                    try {
+                        sh "${WORKSPACE}/${BUILDSCRIPT} i386 native ${BUILDNAME} ${JAILNAMEPREFIX} ${PKGLISTDIR}"
+                    } catch (Exception e) {
+                        currentBuild.currentResult = 'FAILURE'
+                        notifySlack(SLACKCHANNELNAME, 'stage Build i386 Packages', currentBuild.currentResult)
+                    }
+                }
             }
             post {
                 failure {
@@ -124,13 +138,27 @@ pipeline {
                 environment name: 'DO_BUILD', value: 'y'
             }
             steps {
-                sshagent (credentials: [sshCredential]) {
-                    sh "ssh ${sshUser}@${armv6Host} mkdir -p ${remoteBinDir}"
-                    sh "scp ${WORKSPACE}/${BUILDSCRIPT} ${sshUser}@${armv6Host}:${remoteBinDir}"
-                    sh "ssh ${sshUser}@${armv6Host} env WORKSPACE=${remoteBinDir} PORTSTREE=${PORTSTREE} DRYRUN_BUILD=${DRYRUN_BUILD} VERBOSE_BUILD=${VERBOSE_BUILD} ${remoteBinDir}/${BUILDSCRIPT} armv6 native ${BUILDNAME} ${JAILNAMEPREFIX} ${PKGLISTDIR}"
-                    sh "ssh ${sshUser}@${armv6Host} rm -f ${remoteBinDir}/${BUILDSCRIPT}"
-                    // Don't treat directory removal failure as stage failure
-                    sh "ssh ${sshUser}@${armv6Host} rmdir ${remoteBinDir} || echo ignore"
+                script {
+                    try {
+                        sshagent (credentials: [sshCredential]) {
+                            sh """
+ssh ${sshUser}@${armv6Host} mkdir -p ${remoteBinDir}
+scp ${WORKSPACE}/\${BUILDSCRIPT} ${sshUser}@${armv6Host}:${remoteBinDir}
+ssh ${sshUser}@${armv6Host} \\
+    env WORKSPACE=${remoteBinDir} PORTSTREE=${PORTSTREE} DRYRUN_BUILD=${DRYRUN_BUILD} VERBOSE_BUILD=${VERBOSE_BUILD} ${remoteBinDir}/\${BUILDSCRIPT} armv6 native ${BUILDNAME} ${JAILNAMEPREFIX} ${PKGLISTDIR}; \\
+    rm -f ${remoteBinDir}/\${BUILDSCRIPT}; \\
+    rmdir ${remoteBinDir} || echo ignore
+"""
+                        }
+                    } catch (Exception e) {
+                        sh """
+ssh ${sshUser}@${armv6Host} \\
+    rm -f ${remoteBinDir}/\${BUILDSCRIPT} ${remoteBinDir}/poudriere.*; \\
+    rmdir ${remoteBinDir} || echo ignore
+"""
+                        currentBuild.currentResult = 'FAILURE'
+                        notifySlack(SLACKCHANNELNAME, 'stage Build armv6 Packages (Native)', currentBuild.currentResult)
+                    }
                 }
             }
             post {
@@ -146,7 +174,14 @@ pipeline {
                 environment name: 'DO_COPY', value: 'y'
             }
             steps {
-                sh "${WORKSPACE}/CopyPackages.sh armv6"
+                script {
+                    try {
+                        sh "${WORKSPACE}/CopyPackages.sh armv6"
+                    } catch (Exception e) {
+                        currentBuild.currentResult = 'FAILURE'
+                        notifySlack(SLACKCHANNELNAME, 'stage Copy armv6 Native -> Cross Directory', currentBuild.currentResult)
+                    }
+                }
             }
             post {
                 failure {
@@ -159,7 +194,14 @@ pipeline {
                 environment name: 'DO_BUILD', value: 'y'
             }
             steps {
-                sh "${WORKSPACE}/${BUILDSCRIPT} armv6 cross ${BUILDNAME} ${JAILNAMEPREFIX} ${PKGLISTDIR}"
+                script {
+                    try {
+                        sh "${WORKSPACE}/${BUILDSCRIPT} armv6 cross ${BUILDNAME} ${JAILNAMEPREFIX} ${PKGLISTDIR}"
+                    } catch (Exception e) {
+                        currentBuild.currentResult = 'FAILURE'
+                        notifySlack(SLACKCHANNELNAME, 'stage Build armv6 Packages (Cross)', currentBuild.currentResult)
+                    }
+                }
             }
             post {
                 failure {
@@ -172,7 +214,14 @@ pipeline {
                 environment name: 'DO_COPY', value: 'y'
             }
             steps {
-                sh "${WORKSPACE}/SyncNativeCrossPkgDirs.sh armv6"
+                script {
+                    try {
+                        sh "${WORKSPACE}/SyncNativeCrossPkgDirs.sh armv6"
+                    } catch (Exception e) {
+                        currentBuild.currentResult = 'FAILURE'
+                        notifySlack(SLACKCHANNELNAME, 'stage Sync armv6 Cross -> Native Directory', currentBuild.currentResult)
+                    }
+                }
             }
             post {
                 failure {
@@ -186,13 +235,27 @@ pipeline {
                 environment name: 'DO_BUILD', value: 'y'
             }
             steps {
-                sshagent (credentials: [sshCredential]) {
-                    sh "ssh ${sshUser}@${aarch64Host} mkdir -p ${remoteBinDir}"
-                    sh "scp ${WORKSPACE}/${BUILDSCRIPT} ${sshUser}@${aarch64Host}:${remoteBinDir}"
-                    sh "ssh ${sshUser}@${aarch64Host} env WORKSPACE=${remoteBinDir} PORTSTREE=${PORTSTREE} DRYRUN_BUILD=${DRYRUN_BUILD} VERBOSE_BUILD=${VERBOSE_BUILD} ${remoteBinDir}/${BUILDSCRIPT} aarch64 native ${BUILDNAME} ${JAILNAMEPREFIX} ${PKGLISTDIR}"
-                    sh "ssh ${sshUser}@${aarch64Host} rm -f ${remoteBinDir}/${BUILDSCRIPT}"
-                    // Don't treat directory removal failure as stage failure
-                    sh "ssh ${sshUser}@${aarch64Host} rmdir ${remoteBinDir} || echo ignore"
+                script {
+                    try {
+                        sshagent (credentials: [sshCredential]) {
+                            sh """
+ssh ${sshUser}@${aarch64Host} mkdir -p ${remoteBinDir}
+scp ${WORKSPACE}/\${BUILDSCRIPT} ${sshUser}@${aarch64Host}:${remoteBinDir}
+ssh ${sshUser}@${aarch64Host} \\
+    env WORKSPACE=${remoteBinDir} PORTSTREE=${PORTSTREE} DRYRUN_BUILD=${DRYRUN_BUILD} VERBOSE_BUILD=${VERBOSE_BUILD} ${remoteBinDir}/\${BUILDSCRIPT} aarch64 native ${BUILDNAME} ${JAILNAMEPREFIX} ${PKGLISTDIR}; \\
+    rm -f ${remoteBinDir}/\${BUILDSCRIPT}; \\
+    rmdir ${remoteBinDir} || echo ignore
+"""
+                        }
+                    } catch (Exception e) {
+                        sh """
+ssh ${sshUser}@${aarch64Host} \\
+    rm -f ${remoteBinDir}/\${BUILDSCRIPT} ${remoteBinDir}/poudriere.*; \\
+    rmdir ${remoteBinDir} || echo ignore
+"""
+                        currentBuild.currentResult = 'FAILURE'
+                        notifySlack(SLACKCHANNELNAME, 'stage Build aarch64 Packages (Native)', currentBuild.currentResult)
+                    }
                 }
             }
             post {
@@ -208,7 +271,14 @@ pipeline {
                 environment name: 'DO_COPY', value: 'y'
             }
             steps {
-                sh "${WORKSPACE}/CopyPackages.sh aarch64"
+                script {
+                    try {
+                        sh "${WORKSPACE}/CopyPackages.sh aarch64"
+                    } catch (Exception e) {
+                        currentBuild.currentResult = 'FAILURE'
+                        notifySlack(SLACKCHANNELNAME, 'stage Copy aarch64 Native -> Cross Directory', currentBuild.currentResult)
+                    }
+                }
             }
             post {
                 failure {
@@ -221,7 +291,14 @@ pipeline {
                 environment name: 'DO_BUILD', value: 'y'
             }
             steps {
-                sh "${WORKSPACE}/${BUILDSCRIPT} aarch64 cross ${BUILDNAME} ${JAILNAMEPREFIX} ${PKGLISTDIR}"
+                script {
+                    try {
+                        sh "${WORKSPACE}/${BUILDSCRIPT} aarch64 cross ${BUILDNAME} ${JAILNAMEPREFIX} ${PKGLISTDIR}"
+                    } catch (Exception e) {
+                        currentBuild.currentResult = 'FAILURE'
+                        notifySlack(SLACKCHANNELNAME, 'stage Build aarch64 Packages (Cross)', currentBuild.currentResult)
+                    }
+                }
             }
             post {
                 failure {
@@ -234,7 +311,14 @@ pipeline {
                 environment name: 'DO_COPY', value: 'y'
             }
             steps {
-                sh "${WORKSPACE}/SyncNativeCrossPkgDirs.sh aarch64"
+                script {
+                    try {
+                        sh "${WORKSPACE}/SyncNativeCrossPkgDirs.sh aarch64"
+                    } catch (Exception e) {
+                        currentBuild.currentResult = 'FAILURE'
+                        notifySlack(SLACKCHANNELNAME, 'stage Sync aarch64 Cross -> Native Directory', currentBuild.currentResult)
+                    }
+                }
             }
             post {
                 failure {
@@ -248,7 +332,14 @@ pipeline {
                 environment name: 'DO_BUILD', value: 'y'
             }
             steps {
-                sh "${WORKSPACE}/${BUILDSCRIPT} mips64 cross ${BUILDNAME} ${JAILNAMEPREFIX} ${PKGLISTDIR}"
+                script {
+                    try {
+                        sh "${WORKSPACE}/${BUILDSCRIPT} mips64 cross ${BUILDNAME} ${JAILNAMEPREFIX} ${PKGLISTDIR}"
+                    } catch (Exception e) {
+                        currentBuild.currentResult = 'FAILURE'
+                        notifySlack(SLACKCHANNELNAME, 'stage Build mips64 Packages (Cross)', currentBuild.currentResult)
+                    }
+                }
             }
             post {
                 failure {
@@ -262,7 +353,14 @@ pipeline {
                 environment name: 'DO_SYNC', value: 'y'
             }
             steps {
-                sh "${WORKSPACE}/SyncPackages.sh"
+                script {
+                    try {
+                        sh "${WORKSPACE}/SyncPackages.sh"
+                    } catch (Exception e) {
+                        currentBuild.currentResult = 'FAILURE'
+                        notifySlack(SLACKCHANNELNAME, 'stage Sync', currentBuild.currentResult)
+                    }
+                }
             }
             post {
                 failure {
