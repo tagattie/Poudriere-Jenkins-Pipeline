@@ -13,6 +13,7 @@
 // syncHost      (pkg serving host)
 // syncPort      (port for ssh remote login to pkg serving host)
 // syncBase      (base directory for storing packages)
+// poudriereUrl  (URL of poudriere build logs)
 ////////
 
 pipeline {
@@ -100,7 +101,7 @@ pipeline {
                     try {
                         sh "${WORKSPACE}/${BUILDSCRIPT} amd64 native ${BUILDNAME} ${JAILNAMEPREFIX} ${PKGLISTDIR}"
                     } catch (Exception e) {
-                        notifySlack(SLACKCHANNELNAME, 'stage Build amd64 Packages', 'FAILURE')
+                        notifySlack(SLACKCHANNELNAME, 'stage Build amd64 Packages', 'FAILURE', "${poudriereUrl}?mastername=${JAILNAMEPREFIX}amd64-${PORTSTREE}&build=${BUILDNAME}")
                     }
                 }
             }
@@ -120,7 +121,7 @@ pipeline {
                     try {
                         sh "${WORKSPACE}/${BUILDSCRIPT} i386 native ${BUILDNAME} ${JAILNAMEPREFIX} ${PKGLISTDIR}"
                     } catch (Exception e) {
-                        notifySlack(SLACKCHANNELNAME, 'stage Build i386 Packages', 'FAILURE')
+                        notifySlack(SLACKCHANNELNAME, 'stage Build i386 Packages', 'FAILURE', "${poudriereUrl}?mastername=${JAILNAMEPREFIX}i386-${PORTSTREE}&build=${BUILDNAME}")
                     }
                 }
             }
@@ -154,7 +155,7 @@ ssh ${sshUser}@${armv6Host} \\
     rm -f ${remoteBinDir}/\${BUILDSCRIPT} ${remoteBinDir}/poudriere.*; \\
     rmdir ${remoteBinDir} || echo ignore
 """
-                        notifySlack(SLACKCHANNELNAME, 'stage Build armv6 Packages (Native)', 'FAILURE')
+                        notifySlack(SLACKCHANNELNAME, 'stage Build armv6 Packages (Native)', 'FAILURE', "${poudriereUrl}?mastername=${JAILNAMEPREFIX}armv6-${PORTSTREE}&build=${BUILDNAME}")
                     }
                 }
             }
@@ -197,7 +198,7 @@ ssh ${sshUser}@${armv6Host} \\
                     try {
                         sh "${WORKSPACE}/${BUILDSCRIPT} armv6 cross ${BUILDNAME} ${JAILNAMEPREFIX} ${PKGLISTDIR}"
                     } catch (Exception e) {
-                        notifySlack(SLACKCHANNELNAME, 'stage Build armv6 Packages (Cross)', 'FAILURE')
+                        notifySlack(SLACKCHANNELNAME, 'stage Build armv6 Packages (Cross)', 'FAILURE', "${poudriereUrl}?mastername=${JAILNAMEPREFIX}amrv6x-${PORTSTREE}&build=${BUILDNAME}")
                     }
                 }
             }
@@ -250,7 +251,7 @@ ssh ${sshUser}@${aarch64Host} \\
     rm -f ${remoteBinDir}/\${BUILDSCRIPT} ${remoteBinDir}/poudriere.*; \\
     rmdir ${remoteBinDir} || echo ignore
 """
-                        notifySlack(SLACKCHANNELNAME, 'stage Build aarch64 Packages (Native)', 'FAILURE')
+                        notifySlack(SLACKCHANNELNAME, 'stage Build aarch64 Packages (Native)', 'FAILURE', "${poudriereUrl}?mastername=${JAILNAMEPREFIX}aarch64-${PORTSTREE}&build=${BUILDNAME}")
                     }
                 }
             }
@@ -293,7 +294,7 @@ ssh ${sshUser}@${aarch64Host} \\
                     try {
                         sh "${WORKSPACE}/${BUILDSCRIPT} aarch64 cross ${BUILDNAME} ${JAILNAMEPREFIX} ${PKGLISTDIR}"
                     } catch (Exception e) {
-                        notifySlack(SLACKCHANNELNAME, 'stage Build aarch64 Packages (Cross)', 'FAILURE')
+                        notifySlack(SLACKCHANNELNAME, 'stage Build aarch64 Packages (Cross)', 'FAILURE', "${poudriereUrl}?mastername=${JAILNAMEPREFIX}aarch64x-${PORTSTREE}&build=${BUILDNAME}")
                     }
                 }
             }
@@ -332,7 +333,7 @@ ssh ${sshUser}@${aarch64Host} \\
                     try {
                         sh "${WORKSPACE}/${BUILDSCRIPT} mips64 cross ${BUILDNAME} ${JAILNAMEPREFIX} ${PKGLISTDIR}"
                     } catch (Exception e) {
-                        notifySlack(SLACKCHANNELNAME, 'stage Build mips64 Packages (Cross)', 'FAILURE')
+                        notifySlack(SLACKCHANNELNAME, 'stage Build mips64 Packages (Cross)', 'FAILURE', "${poudriereUrl}?mastername=${JAILNAMEPREFIX}mips64-${PORTSTREE}&build=${BUILDNAME}")
                     }
                 }
             }
