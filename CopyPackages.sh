@@ -26,6 +26,9 @@ LATESTCROSSREALDIR=$(find ${CROSSPKGDIR}/ -type d -depth 1 -print | \
 if [ "${DRYRUN_COPY}" == "y" ]; then
     DRYRUN_FLAG="-n"
 fi
+if  [ "${VERBOSE_COPY}" == "y" ]; then
+    VERBOSE_FLAG="-v"
+fi
 if [ -n "${LATESTCROSSREALDIR}" ]; then
     # Only when there is already one, copy the contents of native-built
     # directory to a cross building working directory
@@ -35,7 +38,8 @@ if [ -n "${LATESTCROSSREALDIR}" ]; then
         # find ${i} -print -depth | \
         #     sudo cpio -pdam ${CROSSPKGDIR}/.building
         # sudo cpdup -i0 -x ${i} ${CROSSPKGDIR}/.building/${i}
-        sudo rsync ${DRYRUN_FLAG} -a --info=STATS3 --delete --stats \
+        sudo rsync ${DRYRUN_FLAG} ${VERBOSE_FLAG} \
+            -a --info=STATS3 --delete --stats \
             ${i} ${CROSSPKGDIR}/.building
     done
 else

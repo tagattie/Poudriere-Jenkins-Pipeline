@@ -27,6 +27,9 @@ pipeline {
         DRYRUN_BUILD='y'
         DRYRUN_COPY='y'
         DRYRUN_SYNC='y'
+        VERBOSE_BUILD='y'
+        VERBOSE_COPY='y'
+        VERBOSE_SYNC='y'
         // Script for package building
         BUILDSCRIPT='BuildPackages.sh'
         // Ports tree name which poudriere will work on

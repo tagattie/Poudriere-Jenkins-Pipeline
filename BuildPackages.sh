@@ -25,7 +25,10 @@ cat ${PKGLIST} > ${pkgList}
 if [ "${DRYRUN_BUILD}" == "y" ]; then
     DRYRUN_FLAG="-n"
 fi
-sudo poudriere bulk ${DRYRUN_FLAG} -f ${pkgList} -j ${JAILNAME} -p ${PORTSTREE} -B ${BUILDNAME} || ESTAT=$?
+if  [ "${VERBOSE_BUILD}" == "y" ]; then
+    VERBOSE_FLAG="-v"
+fi
+sudo poudriere bulk ${DRYRUN_FLAG} ${VERBOSE_FLAG} -f ${pkgList} -j ${JAILNAME} -p ${PORTSTREE} -B ${BUILDNAME} || ESTAT=$?
 
 # Show jail information after build has finished
 sudo poudriere jails -i -j ${JAILNAME}
