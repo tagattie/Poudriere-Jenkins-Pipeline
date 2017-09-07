@@ -18,7 +18,6 @@
 // Parameters for debugging
 // doUpdate      (If y, execute update stage)
 // doBuild       (If y, build packages for architectures)
-// doCopy        (If y, copy native->cross, cross->native packages)
 // doSync        (If y, sync artifacts with pkg serving server)
 // dryRunUpdate  (If y, dry run update stage)
 // dryRunBuild   (If y, dry run build stage)
