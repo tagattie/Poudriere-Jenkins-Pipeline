@@ -150,7 +150,7 @@ ssh ${sshUser}@${armv6Host} \\
                             try {
                                 sh "${WORKSPACE}/${BUILDSCRIPT} armv6 cross ${BUILDNAME} ${JAILNAMEPREFIX} ${PKGLISTDIR}"
                             } catch (Exception e) {
-                                notifySlack(SLACKCHANNELNAME, 'stage Build armv6 Packages (Cross)', 'FAILURE', "${poudriereUrl}?mastername=${JAILNAMEPREFIX}amrv6x-${PORTSTREE}&build=${BUILDNAME}")
+                                notifySlack(SLACKCHANNELNAME, 'stage Build armv6 Packages (Cross)', 'FAILURE', "${poudriereUrl}?mastername=${JAILNAMEPREFIX}armv6x-${PORTSTREE}&build=${BUILDNAME}")
                             }
                             // Sync armv6 cross packages -> native directory.
                             try {
