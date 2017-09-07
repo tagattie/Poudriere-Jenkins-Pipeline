@@ -75,6 +75,8 @@ pipeline {
         stage('Checkout Jenkinsfile and other files.') {
             steps {
                 checkout scm
+                archiveArtifacts 'Jenkinsfile'
+                archiveArtifacts '*.sh'
                 notifySlack(SLACKCHANNELNAME, '', 'START')
             }
         }
