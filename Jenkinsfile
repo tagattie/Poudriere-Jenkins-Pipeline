@@ -16,17 +16,17 @@
 // poudriereUrl  (URL of poudriere build logs)
 //
 // Parameters for debugging
-// doUpdate
-// doBuild
-// doCopy
-// doSync
-// dryRunUpdate
-// dryRunBuild
-// dryRunCopy
-// dryRunSync
-// verboseBuild
-// verboseCopy
-// verboseSync
+// doUpdate      (If y, execute update stage)
+// doBuild       (If y, build packages for architectures)
+// doCopy        (If y, copy native->cross, cross->native packages)
+// doSync        (If y, sync artifacts with pkg serving server)
+// dryRunUpdate  (If y, dry run update stage)
+// dryRunBuild   (If y, dry run build stage)
+// dryRunCopy    (If y, dry run copy stage)
+// dryRunSync    (If y, dry run sync stage)
+// verboseBuild  (If y, update stage verbose output)
+// verboseCopy   (If y, copy stage verbose output)
+// verboseSync   (If y, sync stage verbose output)
 ////////
 
 pipeline {
