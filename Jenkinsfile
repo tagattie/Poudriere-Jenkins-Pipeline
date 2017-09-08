@@ -104,7 +104,14 @@ pipeline {
                         script {
                             try {
                                 sh "${WORKSPACE}/${BUILDSCRIPT} amd64 native ${BUILDNAME} ${JAILNAMEPREFIX} ${PKGLISTDIR}"
+                                // Here and there this global variable is
+                                // abused to store results of each step
+                                // (SUCCESS or FAILURE) to determine
+                                // whether the entier process should be
+                                // 'SUCCESS' or 'FAILURE'
+                                currentBuild.description += ' SUCCESS'
                             } catch (Exception e) {
+                                currentBuild.description += ' FAILURE'
                                 notifySlack(SLACKCHANNELNAME, 'stage Build amd64 Packages', 'FAILURE', "${poudriereUrl}?mastername=${JAILNAMEPREFIX}amd64-${PORTSTREE}&build=${BUILDNAME}")
                             }
                         }
@@ -113,7 +120,9 @@ pipeline {
                         script {
                             try {
                                 sh "${WORKSPACE}/${BUILDSCRIPT} i386 native ${BUILDNAME} ${JAILNAMEPREFIX} ${PKGLISTDIR}"
+                                currentBuild.description += ' SUCCESS'
                             } catch (Exception e) {
+                                currentBuild.description += ' FAILURE'
                                 notifySlack(SLACKCHANNELNAME, 'stage Build i386 Packages', 'FAILURE', "${poudriereUrl}?mastername=${JAILNAMEPREFIX}i386-${PORTSTREE}&build=${BUILDNAME}")
                             }
                         }
@@ -131,8 +140,10 @@ ssh ${sshUser}@${armv6Host} \\
     rm -f ${remoteBinDir}/\${BUILDSCRIPT}; \\
     rmdir ${remoteBinDir} || echo ignore
 """
+                                    currentBuild.description += ' SUCCESS'
                                 }
                             } catch (Exception e) {
+                                currentBuild.description += ' FAILURE'
                                 sh """
 ssh ${sshUser}@${armv6Host} \\
     rm -f ${remoteBinDir}/\${BUILDSCRIPT}; \\
@@ -143,19 +154,25 @@ ssh ${sshUser}@${armv6Host} \\
                             // Copy armv6 native packages -> cross working directory.
                             try {
                                 sh "${WORKSPACE}/CopyPackages.sh armv6"
+                                currentBuild.description += ' SUCCESS'
                             } catch (Exception e) {
+                                currentBuild.description += ' FAILURE'
                                 notifySlack(SLACKCHANNELNAME, 'stage Copy armv6 Native -> Cross Directory', 'FAILURE')
                             }
                             // Build packages for armv6 (Cross building)
                             try {
                                 sh "${WORKSPACE}/${BUILDSCRIPT} armv6 cross ${BUILDNAME} ${JAILNAMEPREFIX} ${PKGLISTDIR}"
+                                currentBuild.description += ' SUCCESS'
                             } catch (Exception e) {
+                                currentBuild.description += ' FAILURE'
                                 notifySlack(SLACKCHANNELNAME, 'stage Build armv6 Packages (Cross)', 'FAILURE', "${poudriereUrl}?mastername=${JAILNAMEPREFIX}armv6x-${PORTSTREE}&build=${BUILDNAME}")
                             }
                             // Sync armv6 cross packages -> native directory.
                             try {
                                 sh "${WORKSPACE}/SyncNativeCrossPkgDirs.sh armv6"
+                                currentBuild.description += ' SUCCESS'
                             } catch (Exception e) {
+                                currentBuild.description += ' FAILURE'
                                 notifySlack(SLACKCHANNELNAME, 'stage Sync armv6 Cross -> Native Directory', 'FAILURE')
                             }
                         }
@@ -173,8 +190,10 @@ ssh ${sshUser}@${aarch64Host} \\
     rm -f ${remoteBinDir}/\${BUILDSCRIPT}; \\
     rmdir ${remoteBinDir} || echo ignore
 """
+                                    currentBuild.description += ' SUCCESS'
                                 }
                             } catch (Exception e) {
+                                currentBuild.description += ' FAILURE'
                                 sh """
 ssh ${sshUser}@${aarch64Host} \\
     rm -f ${remoteBinDir}/\${BUILDSCRIPT}; \\
@@ -185,19 +204,25 @@ ssh ${sshUser}@${aarch64Host} \\
                             // Copy aarch64 native packages -> cross working directory.
                             try {
                                 sh "${WORKSPACE}/CopyPackages.sh aarch64"
+                                currentBuild.description += ' SUCCESS'
                             } catch (Exception e) {
+                                currentBuild.description += ' FAILURE'
                                 notifySlack(SLACKCHANNELNAME, 'stage Copy aarch64 Native -> Cross Directory', 'FAILURE')
                             }
                             // Build packages for aarch64 (Cross building)
                             try {
                                 sh "${WORKSPACE}/${BUILDSCRIPT} aarch64 cross ${BUILDNAME} ${JAILNAMEPREFIX} ${PKGLISTDIR}"
+                                currentBuild.description += ' SUCCESS'
                             } catch (Exception e) {
+                                currentBuild.description += ' FAILURE'
                                 notifySlack(SLACKCHANNELNAME, 'stage Build aarch64 Packages (Cross)', 'FAILURE', "${poudriereUrl}?mastername=${JAILNAMEPREFIX}aarch64x-${PORTSTREE}&build=${BUILDNAME}")
                             }
                             // Sync aarch64 cross packages -> native directory.
                             try {
                                 sh "${WORKSPACE}/SyncNativeCrossPkgDirs.sh aarch64"
+                                currentBuild.description += ' SUCCESS'
                             } catch (Exception e) {
+                                currentBuild.description += ' FAILURE'
                                 notifySlack(SLACKCHANNELNAME, 'stage Sync aarch64 Cross -> Native Directory', 'FAILURE')
                             }
                         }
@@ -206,7 +231,9 @@ ssh ${sshUser}@${aarch64Host} \\
                         script {
                             try {
                                 sh "${WORKSPACE}/${BUILDSCRIPT} mips64 cross ${BUILDNAME} ${JAILNAMEPREFIX} ${PKGLISTDIR}"
+                                currentBuild.description += ' SUCCESS'
                             } catch (Exception e) {
+                                currentBuild.description += ' FAILURE'
                                 notifySlack(SLACKCHANNELNAME, 'stage Build mips64 Packages (Cross)', 'FAILURE', "${poudriereUrl}?mastername=${JAILNAMEPREFIX}mips64-${PORTSTREE}&build=${BUILDNAME}")
                             }
                         }
@@ -228,7 +255,9 @@ ssh ${sshUser}@${aarch64Host} \\
                 script {
                     try {
                         sh "${WORKSPACE}/SyncPackages.sh"
+                        currentBuild.description += ' SUCCESS'
                     } catch (Exception e) {
+                        currentBuild.description += ' FAILURE'
                         notifySlack(SLACKCHANNELNAME, 'stage Sync', 'FAILURE')
                     }
                 }
@@ -236,6 +265,18 @@ ssh ${sshUser}@${aarch64Host} \\
             post {
                 failure {
                     notifySlack(SLACKCHANNELNAME, 'stage Sync', "${currentBuild.currentResult}")
+                }
+            }
+        }
+
+        stage('Determine entire build is successful or failed.') {
+            steps {
+                script {
+                    if (currentBuild.description.contains('FAILURE')) {
+                        currentBuild.result = 'FAILURE'
+                    } else {
+                        currentBuild.result = 'SUCCESS'
+                    }
                 }
             }
         }
