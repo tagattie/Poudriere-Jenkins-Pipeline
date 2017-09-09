@@ -76,6 +76,7 @@ pipeline {
                 checkout scm
                 archiveArtifacts 'Jenkinsfile'
                 archiveArtifacts '*.sh'
+                currentBuild.description = ''
                 notifySlack(SLACKCHANNELNAME, '', 'START')
             }
         }
