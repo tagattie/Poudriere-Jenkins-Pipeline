@@ -77,7 +77,7 @@ pipeline {
                     checkout scm
                     archiveArtifacts 'Jenkinsfile'
                     archiveArtifacts '*.sh'
-                    notifySlack(SLACKCHANNELNAME, '', 'START')
+                    notifySlack(SLACKCHANNELNAME, 'Build', 'START')
                 }
             }
         }
@@ -94,7 +94,7 @@ pipeline {
             post {
                 failure {
                     timestamps {
-                        notifySlack(SLACKCHANNELNAME, 'stage Update Ports Tree', "${currentBuild.currentResult}")
+                        notifySlack(SLACKCHANNELNAME, 'Update Ports Tree', "${currentBuild.currentResult}")
                     }
                 }
             }
@@ -119,7 +119,7 @@ pipeline {
                                     currentBuild.description += ' SUCCESS(amd64)'
                                 } catch (Exception e) {
                                     currentBuild.description += ' FAILURE(amd64)'
-                                    notifySlack(SLACKCHANNELNAME, 'stage Build amd64 Packages', 'FAILURE', "${poudriereUrl}?mastername=${JAILNAMEPREFIX}amd64-${PORTSTREE}&build=${BUILDNAME}")
+                                    notifySlack(SLACKCHANNELNAME, 'Build amd64 pkgs', 'FAILURE', "${poudriereUrl}?mastername=${JAILNAMEPREFIX}amd64-${PORTSTREE}&build=${BUILDNAME}")
                                 }
                             }
                         }
@@ -132,7 +132,7 @@ pipeline {
                                     currentBuild.description += ' SUCCESS(i386)'
                                 } catch (Exception e) {
                                     currentBuild.description += ' FAILURE(i386)'
-                                    notifySlack(SLACKCHANNELNAME, 'stage Build i386 Packages', 'FAILURE', "${poudriereUrl}?mastername=${JAILNAMEPREFIX}i386-${PORTSTREE}&build=${BUILDNAME}")
+                                    notifySlack(SLACKCHANNELNAME, 'Build i386 pkgs', 'FAILURE', "${poudriereUrl}?mastername=${JAILNAMEPREFIX}i386-${PORTSTREE}&build=${BUILDNAME}")
                                 }
                             }
                         }
@@ -160,7 +160,7 @@ ssh ${sshUser}@${armv6Host} \\
     rm -f ${remoteBinDir}/\${BUILDSCRIPT}; \\
     rmdir ${remoteBinDir} || echo ignore
 """
-                                    notifySlack(SLACKCHANNELNAME, 'stage Build armv6 Packages (Native)', 'FAILURE', "${poudriereUrl}?mastername=${JAILNAMEPREFIX}armv6-${PORTSTREE}&build=${BUILDNAME}")
+                                    notifySlack(SLACKCHANNELNAME, 'Build armv6 (native) pkgs', 'FAILURE', "${poudriereUrl}?mastername=${JAILNAMEPREFIX}armv6-${PORTSTREE}&build=${BUILDNAME}")
                                 }
                                 // Copy armv6 native packages -> cross working directory.
                                 try {
@@ -168,7 +168,7 @@ ssh ${sshUser}@${armv6Host} \\
                                     currentBuild.description += ' SUCCESS(armv6 native->cross)'
                                 } catch (Exception e) {
                                     currentBuild.description += ' FAILURE(armv6 native->cross)'
-                                    notifySlack(SLACKCHANNELNAME, 'stage Copy armv6 Native -> Cross Directory', 'FAILURE')
+                                    notifySlack(SLACKCHANNELNAME, 'Copy armv6 native to cross dir', 'FAILURE')
                                 }
                                 // Build packages for armv6 (Cross building)
                                 try {
@@ -176,7 +176,7 @@ ssh ${sshUser}@${armv6Host} \\
                                     currentBuild.description += ' SUCCESS(armv6 cross)'
                                 } catch (Exception e) {
                                     currentBuild.description += ' FAILURE(armv6 cross)'
-                                    notifySlack(SLACKCHANNELNAME, 'stage Build armv6 Packages (Cross)', 'FAILURE', "${poudriereUrl}?mastername=${JAILNAMEPREFIX}armv6x-${PORTSTREE}&build=${BUILDNAME}")
+                                    notifySlack(SLACKCHANNELNAME, 'Build armv6 (cross) pkgs', 'FAILURE', "${poudriereUrl}?mastername=${JAILNAMEPREFIX}armv6x-${PORTSTREE}&build=${BUILDNAME}")
                                 }
                                 // Sync armv6 cross packages -> native directory.
                                 try {
@@ -184,7 +184,7 @@ ssh ${sshUser}@${armv6Host} \\
                                     currentBuild.description += ' SUCCESS(armv6 cross->native)'
                                 } catch (Exception e) {
                                     currentBuild.description += ' FAILURE(armv6 cross->native)'
-                                    notifySlack(SLACKCHANNELNAME, 'stage Sync armv6 Cross -> Native Directory', 'FAILURE')
+                                    notifySlack(SLACKCHANNELNAME, 'Sync armv6 cross to native dir', 'FAILURE')
                                 }
                             }
                         }
@@ -212,7 +212,7 @@ ssh ${sshUser}@${aarch64Host} \\
     rm -f ${remoteBinDir}/\${BUILDSCRIPT}; \\
     rmdir ${remoteBinDir} || echo ignore
 """
-                                    notifySlack(SLACKCHANNELNAME, 'stage Build aarch64 Packages (Native)', 'FAILURE', "${poudriereUrl}?mastername=${JAILNAMEPREFIX}aarch64-${PORTSTREE}&build=${BUILDNAME}")
+                                    notifySlack(SLACKCHANNELNAME, 'Build aarch64 (native) pkgs', 'FAILURE', "${poudriereUrl}?mastername=${JAILNAMEPREFIX}aarch64-${PORTSTREE}&build=${BUILDNAME}")
                                 }
                                 // Copy aarch64 native packages -> cross working directory.
                                 try {
@@ -220,7 +220,7 @@ ssh ${sshUser}@${aarch64Host} \\
                                     currentBuild.description += ' SUCCESS(aarch64 native->cross)'
                                 } catch (Exception e) {
                                     currentBuild.description += ' FAILURE(aarch64 native->cross)'
-                                    notifySlack(SLACKCHANNELNAME, 'stage Copy aarch64 Native -> Cross Directory', 'FAILURE')
+                                    notifySlack(SLACKCHANNELNAME, 'Copy aarch64 native to cross dir', 'FAILURE')
                                 }
                                 // Build packages for aarch64 (Cross building)
                                 try {
@@ -228,7 +228,7 @@ ssh ${sshUser}@${aarch64Host} \\
                                     currentBuild.description += ' SUCCESS(aarch64 cross)'
                                 } catch (Exception e) {
                                     currentBuild.description += ' FAILURE(aarch64 cross)'
-                                    notifySlack(SLACKCHANNELNAME, 'stage Build aarch64 Packages (Cross)', 'FAILURE', "${poudriereUrl}?mastername=${JAILNAMEPREFIX}aarch64x-${PORTSTREE}&build=${BUILDNAME}")
+                                    notifySlack(SLACKCHANNELNAME, 'Build aarch64 (cross) pkgs', 'FAILURE', "${poudriereUrl}?mastername=${JAILNAMEPREFIX}aarch64x-${PORTSTREE}&build=${BUILDNAME}")
                                 }
                                 // Sync aarch64 cross packages -> native directory.
                                 try {
@@ -236,7 +236,7 @@ ssh ${sshUser}@${aarch64Host} \\
                                     currentBuild.description += ' SUCCESS(aarch64 cross->native)'
                                 } catch (Exception e) {
                                     currentBuild.description += ' FAILURE(aarch64 cross->native)'
-                                    notifySlack(SLACKCHANNELNAME, 'stage Sync aarch64 Cross -> Native Directory', 'FAILURE')
+                                    notifySlack(SLACKCHANNELNAME, 'Sync aarch64 cross to native dir', 'FAILURE')
                                 }
                             }
                         }
@@ -249,7 +249,7 @@ ssh ${sshUser}@${aarch64Host} \\
                                     currentBuild.description += ' SUCCESS(mips64 cross)'
                                 } catch (Exception e) {
                                     currentBuild.description += ' FAILURE(mips64 cross)'
-                                    notifySlack(SLACKCHANNELNAME, 'stage Build mips64 Packages (Cross)', 'FAILURE', "${poudriereUrl}?mastername=${JAILNAMEPREFIX}mips64-${PORTSTREE}&build=${BUILDNAME}")
+                                    notifySlack(SLACKCHANNELNAME, 'Build mips64 (cross) pkgs', 'FAILURE', "${poudriereUrl}?mastername=${JAILNAMEPREFIX}mips64-${PORTSTREE}&build=${BUILDNAME}")
                                 }
                             }
                         }
@@ -259,7 +259,7 @@ ssh ${sshUser}@${aarch64Host} \\
             post {
                 failure {
                     timestamps {
-                        notifySlack(SLACKCHANNELNAME, 'stage Build', "${currentBuild.currentResult}")
+                        notifySlack(SLACKCHANNELNAME, 'Build pkgs', "${currentBuild.currentResult}")
                     }
                 }
             }
@@ -277,7 +277,7 @@ ssh ${sshUser}@${aarch64Host} \\
                             currentBuild.description += ' SUCCESS(sync)'
                         } catch (Exception e) {
                             currentBuild.description += ' FAILURE(sync)'
-                            notifySlack(SLACKCHANNELNAME, 'stage Sync', 'FAILURE')
+                            notifySlack(SLACKCHANNELNAME, 'Sync pkgs', 'FAILURE')
                         }
                     }
                 }
@@ -285,7 +285,7 @@ ssh ${sshUser}@${aarch64Host} \\
             post {
                 failure {
                     timestamps {
-                        notifySlack(SLACKCHANNELNAME, 'stage Sync', "${currentBuild.currentResult}")
+                        notifySlack(SLACKCHANNELNAME, 'Sync pkgs', "${currentBuild.currentResult}")
                     }
                 }
             }
@@ -325,12 +325,12 @@ ssh ${sshUser}@${aarch64Host} \\
         }
         success {
             timestamps {
-                notifySlack(SLACKCHANNELNAME, '', 'SUCCESS')
+                notifySlack(SLACKCHANNELNAME, 'Build', 'SUCCESS')
             }
         }
         failure {
             timestamps {
-                notifySlack(SLACKCHANNELNAME, '', 'FAILURE')
+                notifySlack(SLACKCHANNELNAME, 'Build', 'FAILURE')
             }
         }
     }
@@ -360,7 +360,7 @@ def notifySlack(String channelName = '#jenkins',
         statusString = 'unknown'
     }
 
-    def message = "Build ${stageName} ${statusString} - ${env.JOB_NAME} #${env.BUILD_NUMBER} (<${url}|Open>)"
+    def message = "${stageName} ${statusString} - ${env.JOB_NAME} #${env.BUILD_NUMBER} (<${url}|Open>)"
 
     slackSend channel: channelName, color: colorCode, message: message
 }
