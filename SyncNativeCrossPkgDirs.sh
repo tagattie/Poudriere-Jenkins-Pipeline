@@ -4,12 +4,13 @@ export LANG=C
 export PATH=/bin:/usr/bin:/usr/local/bin
 
 # Command-line format:
-# SyncNativeCrossPkgDirs arch
+# SyncNativeCrossPkgDirs arch pkgBaseDir portsTree
 ARCH=${1}
-CROSS="x"
+PKGBASEDIR=${2}
+PORTSTREE=${3}
 
 NATIVEPKGDIR=${PKGBASEDIR}/${JAILNAMEPREFIX}${ARCH}-${PORTSTREE}
-CROSSPKGDIR=${PKGBASEDIR}/${JAILNAMEPREFIX}${ARCH}${CROSS}-${PORTSTREE}
+CROSSPKGDIR=${PKGBASEDIR}/${JAILNAMEPREFIX}${ARCH}${CROSSSUFFIX}-${PORTSTREE}
 
 # Simply sync contents of native and cross package directories
 # (Sync direction is cross pkg dir -> native pkg dir.)

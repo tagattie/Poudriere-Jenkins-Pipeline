@@ -3,6 +3,10 @@
 export LANG=C
 export PATH=/bin:/usr/bin:/usr/local/bin
 
+# Command-line format:
+# UpdateTree.sh portsTree
+PORTSTREE=${1}
+
 # Update the ports tree
 if [ "${dryRunUpdate}" != "y" ]; then
     # Update the specified ports tree

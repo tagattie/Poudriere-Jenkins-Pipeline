@@ -4,12 +4,13 @@ export LANG=C
 export PATH=/bin:/usr/bin:/usr/local/bin
 
 # Command-line format:
-# CopyPackages.sh arch
+# CopyPackages.sh arch pkgBaseDir portsTree
 ARCH=${1}
-CROSS="x"
+PKGBASEDIR=${2}
+PORTSTREE=${3}
 
 PKGDIR=${PKGBASEDIR}/${JAILNAMEPREFIX}${ARCH}-${PORTSTREE}
-CROSSPKGDIR=${PKGBASEDIR}/${JAILNAMEPREFIX}${ARCH}${CROSS}-${PORTSTREE}
+CROSSPKGDIR=${PKGBASEDIR}/${JAILNAMEPREFIX}${ARCH}${CROSSSUFFIX}-${PORTSTREE}
 
 # Find the newest .real-XXXX directory of native-built packages
 LATESTREALDIR=$(find ${PKGDIR}/ -type d -depth 1 -print | \
