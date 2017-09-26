@@ -318,7 +318,7 @@ ssh ${sshUser}@${remoteHost} \\
                                     archlist += "${arch} "
                                 }
                             }
-                            sh "${WORKSPACE}/${SYNCSCRIPT} ${archlist}"
+                            sh "${WORKSPACE}/${SYNCSCRIPT} ${config.poudriere.pkgBaseDir} ${config.poudriere.portsTree} ${config.sync.user} ${config.sync.host} ${config.sync.port} ${config.sync.baseDir} ${archlist}"
                             currentBuild.description += ' SUCCESS(sync)'
                         } catch (Exception e) {
                             currentBuild.description += ' FAILURE(sync)'

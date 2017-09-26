@@ -4,8 +4,15 @@ export LANG=C
 export PATH=/bin:/usr/bin:/usr/local/bin
 
 # Command-line Format:
-# SyncPackages.sh [arch ...]
-if [ $# -ne 0 ]; then
+# SyncPackages.sh pkgBaseDir portsTree syncUser syncHost syncPort syncBase [arch ...]
+PKGBASEDIR=${1}
+PORTSTREE=${2}
+SYNCUSER=${3}
+SYNCHOST=${4}
+SYNCPORT=${5}
+SYNCBASE=${6}
+if [ $# -gt 6 ]; then
+    shift 6
     ARCHLIST=$@
 fi
 
@@ -21,8 +28,8 @@ for i in ${ARCHLIST}; do
     PKGDIR=${PKGBASEDIR}/${JAILNAMEPREFIX}${i}-${PORTSTREE}
     ABI=FreeBSD:${MAJORREL}:${arch}
 
-    rsync ${DRYRUN_FLAG} ${VERBOSE_FLAG} -e "ssh -p ${syncPort}" \
+    rsync ${DRYRUN_FLAG} ${VERBOSE_FLAG} -e "ssh -p ${SYNCPORT}" \
         -a --info=STATS3 --delete --stats \
         ${PKGDIR}/ \
-        ${syncUser}@${syncHost}:${syncBase}/${ABI}
+        ${SYNCUSER}@${SYNCHOST}:${SYNCBASE}/${ABI}
 done
