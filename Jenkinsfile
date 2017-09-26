@@ -109,7 +109,7 @@ pipeline {
                     'amd64 packages': {
                         timestamps {
                             script {
-                                if ("${config.archs.amd64.enabled}" == "true") {
+                                if ("${config.archs.amd64?.enabled}" == "true") {
                                     def arch = "${config.archs.amd64.arch}"
                                     def archtype = 'native'
                                     try {
@@ -126,7 +126,7 @@ pipeline {
                     'i386 packages': {
                         timestamps {
                             script {
-                                if ("${config.archs.i386.enabled}" == "true") {
+                                if ("${config.archs.i386?.enabled}" == "true") {
                                     def arch = "${config.archs.i386.arch}"
                                     def archtype = 'native'
                                     try {
@@ -143,8 +143,8 @@ pipeline {
                     'armv6 packages': {
                         timestamps {
                             script {
-                                if ("${config.archs.armv6.enabled}" == "true" &&
-                                    "${config.archs.armv6.native}" == "true") {
+                                if ("${config.archs.armv6?.enabled}" == "true" &&
+                                    "${config.archs.armv6?.native}" == "true") {
                                     def arch = "${config.archs.armv6.arch}"
                                     def archtype = 'native'
                                     def remoteHost = "${config.archs.armv6.nativeHost}"
@@ -180,8 +180,8 @@ ssh ${sshUser}@${remoteHost} \\
                                         notifySlack("${config.slack.channel}", "Copy ${arch} native to cross dir", 'FAILURE')
                                     }
                                 }
-                                if ("${config.archs.armv6.enabled}" == "true" &&
-                                    "${config.archs.armv6.cross}" == "true") {
+                                if ("${config.archs.armv6?.enabled}" == "true" &&
+                                    "${config.archs.armv6?.cross}" == "true") {
                                     def arch = "${config.archs.armv6.arch}"
                                     def archtype = 'cross'
                                     // Build packages for armv6 (Cross building)
@@ -207,8 +207,8 @@ ssh ${sshUser}@${remoteHost} \\
                     'aarch64 packages': {
                         timestamps {
                             script {
-                                if ("${config.archs.aarch64.enabled}" == "true" &&
-                                    "${config.archs.aarch64.native}" == "true") {
+                                if ("${config.archs.aarch64?.enabled}" == "true" &&
+                                    "${config.archs.aarch64?.native}" == "true") {
                                     def arch = "${config.archs.aarch64.arch}"
                                     def archtype = 'native'
                                     def remoteHost = "${config.archs.aarch64.nativeHost}"
@@ -244,8 +244,8 @@ ssh ${sshUser}@${remoteHost} \\
                                         notifySlack("${config.slack.channel}", "Copy ${arch} native to cross dir", 'FAILURE')
                                     }
                                 }
-                                if ("${config.archs.aarch64.enabled}" == "true" &&
-                                    "${config.archs.aarch64.cross}" == "true") {
+                                if ("${config.archs.aarch64?.enabled}" == "true" &&
+                                    "${config.archs.aarch64?.cross}" == "true") {
                                     def arch = "${config.archs.aarch64.arch}"
                                     def archtype = 'cross'
                                     // Build packages for aarch64 (Cross building)
@@ -271,8 +271,8 @@ ssh ${sshUser}@${remoteHost} \\
                     'mips64 packages': {
                         timestamps {
                             script {
-                                if ("${config.archs.mips64.enabled}" == "true" &&
-                                    "${config.archs.mips64.cross}" == "true") {
+                                if ("${config.archs.mips64?.enabled}" == "true" &&
+                                    "${config.archs.mips64?.cross}" == "true") {
                                     def arch = "${config.archs.mips64.arch}"
                                     def archtype = 'cross'
                                     try {
