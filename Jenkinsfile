@@ -109,9 +109,9 @@ pipeline {
                     'amd64 packages': {
                         timestamps {
                             script {
-                                def arch = "${config.archs.amd64.arch}"
-                                def archtype = 'native'
                                 if ("${config.archs.amd64.enabled}" == "true") {
+                                    def arch = "${config.archs.amd64.arch}"
+                                    def archtype = 'native'
                                     try {
                                         sh "${WORKSPACE}/${BUILDSCRIPT} ${arch} ${archtype} ${BUILDNAME} ${JAILNAMEPREFIX} ${config.poudriere.pkgListDir} ${config.poudriere.portsTree}"
                                         currentBuild.description += " SUCCESS(${arch})"
@@ -126,9 +126,9 @@ pipeline {
                     'i386 packages': {
                         timestamps {
                             script {
-                                def arch = "${config.archs.i386.arch}"
-                                def archtype = 'native'
                                 if ("${config.archs.i386.enabled}" == "true") {
+                                    def arch = "${config.archs.i386.arch}"
+                                    def archtype = 'native'
                                     try {
                                         sh "${WORKSPACE}/${BUILDSCRIPT} ${arch} ${archtype} ${BUILDNAME} ${JAILNAMEPREFIX} ${config.poudriere.pkgListDir} ${config.poudriere.portsTree}"
                                         currentBuild.description += " SUCCESS(${arch})"
@@ -143,12 +143,12 @@ pipeline {
                     'armv6 packages': {
                         timestamps {
                             script {
-                                def arch = "${config.archs.armv6.arch}"
-                                def remoteHost = "${config.archs.armv6.nativeHost}"
-                                def remoteBinDir = "${config.archs.armv6.nativeBinDir}"
                                 if ("${config.archs.armv6.enabled}" == "true" &&
                                     "${config.archs.armv6.native}" == "true") {
+                                    def arch = "${config.archs.armv6.arch}"
                                     def archtype = 'native'
+                                    def remoteHost = "${config.archs.armv6.nativeHost}"
+                                    def remoteBinDir = "${config.archs.armv6.nativeBinDir}"
                                     // Build packages for armv6 (Native building)
                                     try {
                                         sshagent (credentials: [sshCredential]) {
@@ -182,6 +182,7 @@ ssh ${sshUser}@${remoteHost} \\
                                 }
                                 if ("${config.archs.armv6.enabled}" == "true" &&
                                     "${config.archs.armv6.cross}" == "true") {
+                                    def arch = "${config.archs.armv6.arch}"
                                     def archtype = 'cross'
                                     // Build packages for armv6 (Cross building)
                                     try {
@@ -206,12 +207,12 @@ ssh ${sshUser}@${remoteHost} \\
                     'aarch64 packages': {
                         timestamps {
                             script {
-                                def arch = "${config.archs.aarch64.arch}"
-                                def remoteHost = "${config.archs.aarch64.nativeHost}"
-                                def remoteBinDir = "${config.archs.aarch64.nativeBinDir}"
                                 if ("${config.archs.aarch64.enabled}" == "true" &&
                                     "${config.archs.aarch64.native}" == "true") {
+                                    def arch = "${config.archs.aarch64.arch}"
                                     def archtype = 'native'
+                                    def remoteHost = "${config.archs.aarch64.nativeHost}"
+                                    def remoteBinDir = "${config.archs.aarch64.nativeBinDir}"
                                     // Build packages for aarch64 (Native building)
                                     try {
                                         sshagent (credentials: [sshCredential]) {
@@ -245,6 +246,7 @@ ssh ${sshUser}@${remoteHost} \\
                                 }
                                 if ("${config.archs.aarch64.enabled}" == "true" &&
                                     "${config.archs.aarch64.cross}" == "true") {
+                                    def arch = "${config.archs.aarch64.arch}"
                                     def archtype = 'cross'
                                     // Build packages for aarch64 (Cross building)
                                     try {
@@ -269,9 +271,9 @@ ssh ${sshUser}@${remoteHost} \\
                     'mips64 packages': {
                         timestamps {
                             script {
-                                def arch = "${config.archs.mips64.arch}"
                                 if ("${config.archs.mips64.enabled}" == "true" &&
                                     "${config.archs.mips64.cross}" == "true") {
+                                    def arch = "${config.archs.mips64.arch}"
                                     def archtype = 'cross'
                                     try {
                                         sh "${WORKSPACE}/${BUILDSCRIPT} ${arch} ${archtype} ${BUILDNAME} ${JAILNAMEPREFIX} ${config.poudriere.pkgListDir} ${config.poudriere.portsTree}"
