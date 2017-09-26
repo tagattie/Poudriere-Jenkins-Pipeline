@@ -353,7 +353,7 @@ ssh ${sshUser}@${remoteHost} \\
         always {
             timestamps {
                 // Clean up (= delete) workspace directory
-                deleteDir()
+                // deleteDir()
                 echo "currentBuild.number: ${currentBuild.number}"
                 echo "currentBuild.result: ${currentBuild.result}"
                 echo "currentBuild.currentResult: ${currentBuild.currentResult}"
