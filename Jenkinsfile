@@ -156,7 +156,7 @@ pipeline {
 ssh ${sshUser}@${remoteHost} mkdir -p ${remoteBinDir}
 scp ${WORKSPACE}/\${BUILDSCRIPT} ${sshUser}@${remoteHost}:${remoteBinDir}
 ssh ${sshUser}@${remoteHost} \\
-    env WORKSPACE=${remoteBinDir} PORTSTREE=${config.poudriere.portsTree} dryRunBuild=${dryRunBuild} verboseBuild=${verboseBuild} ${remoteBinDir}/\${BUILDSCRIPT} ${arch} ${archtype} ${BUILDNAME} ${JAILNAMEPREFIX} ${config.json.pkgListDir} ${config.poudriere.portsTree}; \\
+    env WORKSPACE=${remoteBinDir} PORTSTREE=${config.poudriere.portsTree} dryRunBuild=${dryRunBuild} verboseBuild=${verboseBuild} ${remoteBinDir}/\${BUILDSCRIPT} ${arch} ${archtype} ${BUILDNAME} ${JAILNAMEPREFIX} ${config.poudriere.pkgListDir} ${config.poudriere.portsTree}; \\
     rm -f ${remoteBinDir}/\${BUILDSCRIPT}; \\
     rmdir ${remoteBinDir} || echo ignore
 """
