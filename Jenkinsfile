@@ -133,10 +133,8 @@ pipeline {
                             def archlist = ""
                             archs.each {
                                 if (it.getValue().get('enabled') == true) {
-                                    echo "${it.getValue().get('arch')}"
                                     arch = "${it.getValue().get('arch')}"
                                     if (it.getValue().get('cross') == true) {
-                                        echo "${it.getValue().get('cross')}"
                                         arch += "${CROSSSUFFIX}"
                                     }
                                     archlist += "${arch} "
