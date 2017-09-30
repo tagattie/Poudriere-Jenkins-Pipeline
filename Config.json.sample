@@ -19,7 +19,7 @@
             "enabled": true,
             "native": true,
             "nativeHost": "<Hostname of ARMv6 architecture>",
-            "nativeBinDir": "<Directory of remote package building>",
+            "nativeHostBinDir": "<Directory of remote package building>",
             "cross": true
         },
         "aarch64": {
@@ -27,7 +27,7 @@
             "enabled": true,
             "native": true,
             "nativeHost": "<Hostname of AARCH64 architecture>",
-            "nativeBinDir": "<Directory of remote package building>",
+            "nativeHostBinDir": "<Directory of remote package building>",
             "cross": true
         },
         "mips": {
@@ -35,7 +35,7 @@
             "enabled": true,
             "native": true,
             "nativeHost": "<Hostname of MIPS architecture>",
-            "nativeBinDir": "<Directory of remote package building>",
+            "nativeHostBinDir": "<Directory of remote package building>",
             "cross": true
         },
         "mips64": {
@@ -43,7 +43,7 @@
             "enabled": true,
             "native": true,
             "nativeHost": "<Hostname of MIPS64 architecture>",
-            "nativeBinDir": "<Directory of remote package building>",
+            "nativeHostBinDir": "<Directory of remote package building>",
             "cross": true
         }
     },
