@@ -8,11 +8,15 @@
     "archs": {
         "amd64": {
             "arch": "amd64",
-            "enabled": true
+            "enabled": true,
+            "native": true,
+            "nativeHost": "localhost"
         },
         "i386": {
             "arch": "i386",
-            "enabled": true
+            "enabled": true,
+            "native": true,
+            "nativeHost": "localhost"
         },
         "armv6": {
             "arch": "armv6",

@@ -246,8 +246,11 @@ def transformIntoBuildStep(String archName) {
                     def nativeHostBinDir = "${config.archs."${archName}".nativeHostBinDir}"
 
                     try {
-                        sshagent (credentials: [sshCredential]) {
-                            sh """
+                        if ("${nativeHost}" == "localhost") {
+                            sh "${WORKSPACE}/${BUILDSCRIPT} ${arch} ${buildtype} ${BUILDNAME} ${JAILNAMEPREFIX} ${config.poudriere.pkgListDir} ${config.poudriere.portsTree}"
+                        } else {
+                            sshagent (credentials: [sshCredential]) {
+                                sh """
 ssh ${sshUser}@${nativeHost} mkdir -p ${nativeHostBinDir}
 scp ${WORKSPACE}/\${BUILDSCRIPT} ${sshUser}@${nativeHost}:${nativeHostBinDir}
 ssh ${sshUser}@${nativeHost} \\
@@ -255,15 +258,18 @@ ssh ${sshUser}@${nativeHost} \\
     rm -f ${nativeHostBinDir}/\${BUILDSCRIPT}; \\
     rmdir ${nativeHostBinDir} || echo ignore
 """
-                            currentBuild.description += " SUCCESS(${arch} ${buildtype})"
+                            }
                         }
+                        currentBuild.description += " SUCCESS(${arch} ${buildtype})"
                     } catch (Exception e) {
                         currentBuild.description += " FAILURE(${arch} ${buildtype})"
-                        sh """
+                        if ("${nativeHost}" != "localhost") {
+                            sh """
 ssh ${sshUser}@${nativeHost} \\
     rm -f ${nativeHostBinDir}/\${BUILDSCRIPT}; \\
     rmdir ${nativeHostBinDir} || echo ignore
 """
+                        }
                         notifySlack("${config.slack.channel}", "Build ${arch} (${buildtype}) pkgs", 'FAILURE', "${config.poudriere.urlBase}?mastername=${JAILNAMEPREFIX}armv6-${config.poudriere.portsTree}&build=${BUILDNAME}")
                     }
                 }
