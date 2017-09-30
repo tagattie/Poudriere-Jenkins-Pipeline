@@ -66,11 +66,16 @@ pipeline {
             }
         }
 
-        stage('Read config file.') {
+        stage('Read config file and do some preparations.') {
             steps {
                 timestamps {
                     script {
                         config = readJSON(file: "${CONFIG}")
+                        buildSteps = config.archs.collectEntries(
+                            {
+                                [it, transformIntoBuildStep(it)]
+                            }
+                        )
                         // Here and there this global variable is abused to
                         // store results of each step (SUCCESS or FAILURE) to
                         // determine whether the entire process should be
@@ -105,188 +110,7 @@ pipeline {
                 environment name: 'doBuild', value: 'y'
             }
             steps {
-                parallel(
-                    'amd64 packages': {
-                        timestamps {
-                            script {
-                                if ("${config.archs.amd64?.enabled}" == "true") {
-                                    def arch = "${config.archs.amd64.arch}"
-                                    def archtype = 'native'
-                                    try {
-                                        sh "${WORKSPACE}/${BUILDSCRIPT} ${arch} ${archtype} ${BUILDNAME} ${JAILNAMEPREFIX} ${config.poudriere.pkgListDir} ${config.poudriere.portsTree}"
-                                        currentBuild.description += " SUCCESS(${arch})"
-                                    } catch (Exception e) {
-                                        currentBuild.description += " FAILURE(${arch})"
-                                        notifySlack("${config.slack.channel}", "Build ${arch} pkgs", 'FAILURE', "${config.poudriere.urlBase}?mastername=${JAILNAMEPREFIX}${arch}-${config.poudriere.portsTree}&build=${BUILDNAME}")
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    'i386 packages': {
-                        timestamps {
-                            script {
-                                if ("${config.archs.i386?.enabled}" == "true") {
-                                    def arch = "${config.archs.i386.arch}"
-                                    def archtype = 'native'
-                                    try {
-                                        sh "${WORKSPACE}/${BUILDSCRIPT} ${arch} ${archtype} ${BUILDNAME} ${JAILNAMEPREFIX} ${config.poudriere.pkgListDir} ${config.poudriere.portsTree}"
-                                        currentBuild.description += " SUCCESS(${arch})"
-                                    } catch (Exception e) {
-                                        currentBuild.description += " FAILURE(${arch})"
-                                        notifySlack("${config.slack.channel}", "Build ${arch} pkgs", 'FAILURE', "${config.poudriere.urlBase}?mastername=${JAILNAMEPREFIX}${arch}-${config.poudriere.portsTree}&build=${BUILDNAME}")
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    'armv6 packages': {
-                        timestamps {
-                            script {
-                                if ("${config.archs.armv6?.enabled}" == "true" &&
-                                    "${config.archs.armv6?.native}" == "true") {
-                                    def arch = "${config.archs.armv6.arch}"
-                                    def archtype = 'native'
-                                    def remoteHost = "${config.archs.armv6.nativeHost}"
-                                    def remoteBinDir = "${config.archs.armv6.nativeBinDir}"
-                                    // Build packages for armv6 (Native building)
-                                    try {
-                                        sshagent (credentials: [sshCredential]) {
-                                            sh """
-ssh ${sshUser}@${remoteHost} mkdir -p ${remoteBinDir}
-scp ${WORKSPACE}/\${BUILDSCRIPT} ${sshUser}@${remoteHost}:${remoteBinDir}
-ssh ${sshUser}@${remoteHost} \\
-    env WORKSPACE=${remoteBinDir} PORTSTREE=${config.poudriere.portsTree} dryRunBuild=${dryRunBuild} verboseBuild=${verboseBuild} ${remoteBinDir}/\${BUILDSCRIPT} ${arch} ${archtype} ${BUILDNAME} ${JAILNAMEPREFIX} ${config.poudriere.pkgListDir} ${config.poudriere.portsTree}; \\
-    rm -f ${remoteBinDir}/\${BUILDSCRIPT}; \\
-    rmdir ${remoteBinDir} || echo ignore
-"""
-                                            currentBuild.description += " SUCCESS(${arch} ${archtype})"
-                                        }
-                                    } catch (Exception e) {
-                                        currentBuild.description += " FAILURE(${arch} ${archtype})"
-                                        sh """
-ssh ${sshUser}@${remoteHost} \\
-    rm -f ${remoteBinDir}/\${BUILDSCRIPT}; \\
-    rmdir ${remoteBinDir} || echo ignore
-"""
-                                        notifySlack("${config.slack.channel}", "Build ${arch} (${archtype}) pkgs", 'FAILURE', "${config.poudriere.urlBase}?mastername=${JAILNAMEPREFIX}armv6-${config.poudriere.portsTree}&build=${BUILDNAME}")
-                                    }
-                                    // Copy armv6 native packages -> cross working directory.
-                                    try {
-                                        sh "${WORKSPACE}/${COPYN2CSCRIPT} ${arch} ${config.poudriere.pkgBaseDir} ${config.poudriere.portsTree}"
-                                        currentBuild.description += " SUCCESS(${arch} native->cross)"
-                                    } catch (Exception e) {
-                                        currentBuild.description += " FAILURE(${arch} native->cross)"
-                                        notifySlack("${config.slack.channel}", "Copy ${arch} native to cross dir", 'FAILURE')
-                                    }
-                                }
-                                if ("${config.archs.armv6?.enabled}" == "true" &&
-                                    "${config.archs.armv6?.cross}" == "true") {
-                                    def arch = "${config.archs.armv6.arch}"
-                                    def archtype = 'cross'
-                                    // Build packages for armv6 (Cross building)
-                                    try {
-                                        sh "${WORKSPACE}/${BUILDSCRIPT} ${arch} ${archtype} ${BUILDNAME} ${JAILNAMEPREFIX} ${config.poudriere.pkgListDir} ${config.poudriere.portsTree}"
-                                        currentBuild.description += " SUCCESS(${arch} ${archtype})"
-                                    } catch (Exception e) {
-                                        currentBuild.description += " FAILURE(${arch} ${archtype})"
-                                        notifySlack("${config.slack.channel}", "Build ${arch} (${archtype}) pkgs", 'FAILURE', "${config.poudriere.urlBase}?mastername=${JAILNAMEPREFIX}${arch}${CROSSSUFFIX}-${config.poudriere.portsTree}&build=${BUILDNAME}")
-                                    }
-                                    // Sync armv6 cross packages -> native directory.
-                                    try {
-                                        sh "${WORKSPACE}/${COPYC2NSCRIPT} ${arch} ${config.poudriere.pkgBaseDir} ${config.poudriere.portsTree}"
-                                        currentBuild.description += " SUCCESS(${arch} cross->native)"
-                                    } catch (Exception e) {
-                                        currentBuild.description += " FAILURE(${arch} cross->native)"
-                                        notifySlack("${config.slack.channel}", "Sync ${arch} cross to native dir", 'FAILURE')
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    'aarch64 packages': {
-                        timestamps {
-                            script {
-                                if ("${config.archs.aarch64?.enabled}" == "true" &&
-                                    "${config.archs.aarch64?.native}" == "true") {
-                                    def arch = "${config.archs.aarch64.arch}"
-                                    def archtype = 'native'
-                                    def remoteHost = "${config.archs.aarch64.nativeHost}"
-                                    def remoteBinDir = "${config.archs.aarch64.nativeBinDir}"
-                                    // Build packages for aarch64 (Native building)
-                                    try {
-                                        sshagent (credentials: [sshCredential]) {
-                                            sh """
-ssh ${sshUser}@${remoteHost} mkdir -p ${remoteBinDir}
-scp ${WORKSPACE}/\${BUILDSCRIPT} ${sshUser}@${remoteHost}:${remoteBinDir}
-ssh ${sshUser}@${remoteHost} \\
-    env WORKSPACE=${remoteBinDir} PORTSTREE=${config.poudriere.portsTree} dryRunBuild=${dryRunBuild} verboseBuild=${verboseBuild} ${remoteBinDir}/\${BUILDSCRIPT} ${arch} ${archtype} ${BUILDNAME} ${JAILNAMEPREFIX} ${config.poudriere.pkgListDir} ${config.poudriere.portsTree}; \\
-    rm -f ${remoteBinDir}/\${BUILDSCRIPT}; \\
-    rmdir ${remoteBinDir} || echo ignore
-"""
-                                            currentBuild.description += " SUCCESS(${arch} ${archtype})"
-                                        }
-                                    } catch (Exception e) {
-                                        currentBuild.description += " FAILURE(${arch} ${archtype})"
-                                        sh """
-ssh ${sshUser}@${remoteHost} \\
-    rm -f ${remoteBinDir}/\${BUILDSCRIPT}; \\
-    rmdir ${remoteBinDir} || echo ignore
-"""
-                                        notifySlack("${config.slack.channel}", "Build ${arch} (${archtype}) pkgs", 'FAILURE', "${config.poudriere.urlBase}?mastername=${JAILNAMEPREFIX}${arch}-${config.poudriere.portsTree}&build=${BUILDNAME}")
-                                    }
-                                    // Copy aarch64 native packages -> cross working directory.
-                                    try {
-                                        sh "${WORKSPACE}/${COPYN2CSCRIPT} ${arch} ${config.poudriere.pkgBaseDir} ${config.poudriere.portsTree}"
-                                        currentBuild.description += " SUCCESS(${arch} native->cross)"
-                                    } catch (Exception e) {
-                                        currentBuild.description += " FAILURE(${arch} native->cross)"
-                                        notifySlack("${config.slack.channel}", "Copy ${arch} native to cross dir", 'FAILURE')
-                                    }
-                                }
-                                if ("${config.archs.aarch64?.enabled}" == "true" &&
-                                    "${config.archs.aarch64?.cross}" == "true") {
-                                    def arch = "${config.archs.aarch64.arch}"
-                                    def archtype = 'cross'
-                                    // Build packages for aarch64 (Cross building)
-                                    try {
-                                        sh "${WORKSPACE}/${BUILDSCRIPT} ${arch} ${archtype} ${BUILDNAME} ${JAILNAMEPREFIX} ${config.poudriere.pkgListDir} ${config.poudriere.portsTree}"
-                                        currentBuild.description += " SUCCESS(${arch} ${archtype})"
-                                    } catch (Exception e) {
-                                        currentBuild.description += " FAILURE(${arch} ${archtype})"
-                                        notifySlack("${config.slack.channel}", "Build ${arch} (${archtype}) pkgs", 'FAILURE', "${config.poudriere.urlBase}?mastername=${JAILNAMEPREFIX}${arch}${CROSSSUFFIX}-${config.poudriere.portsTree}&build=${BUILDNAME}")
-                                    }
-                                    // Sync aarch64 cross packages -> native directory.
-                                    try {
-                                        sh "${WORKSPACE}/${COPYC2NSCRIPT} ${arch} ${config.poudriere.pkgBaseDir} ${config.poudriere.portsTree}"
-                                        currentBuild.description += " SUCCESS(${arch} cross->native)"
-                                    } catch (Exception e) {
-                                        currentBuild.description += " FAILURE(${arch} cross->native)"
-                                        notifySlack("${config.slack.channel}", "Sync ${arch} cross to native dir", 'FAILURE')
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    'mips64 packages': {
-                        timestamps {
-                            script {
-                                if ("${config.archs.mips64?.enabled}" == "true" &&
-                                    "${config.archs.mips64?.cross}" == "true") {
-                                    def arch = "${config.archs.mips64.arch}"
-                                    def archtype = 'cross'
-                                    try {
-                                        sh "${WORKSPACE}/${BUILDSCRIPT} ${arch} ${archtype} ${BUILDNAME} ${JAILNAMEPREFIX} ${config.poudriere.pkgListDir} ${config.poudriere.portsTree}"
-                                        currentBuild.description += " SUCCESS(${arch} ${archtype})"
-                                    } catch (Exception e) {
-                                        currentBuild.description += " FAILURE(${arch} ${archtype})"
-                                        notifySlack("${config.slack.channel}", "Build ${arch} (${archtype}) pkgs", 'FAILURE', "${config.poudriere.urlBase}?mastername=${JAILNAMEPREFIX}${arch}${CROSSSUFFIX}-${config.poudriere.portsTree}&build=${BUILDNAME}")
-                                    }
-                                }
-                            }
-                        }
-                    }
-                )
+                parallel(buildSteps)
             }
             post {
                 failure {
@@ -309,10 +133,8 @@ ssh ${sshUser}@${remoteHost} \\
                             def archlist = ""
                             archs.each {
                                 if (it.getValue().get('enabled') == true) {
-                                    echo "${it.getValue().get('arch')}"
                                     arch = "${it.getValue().get('arch')}"
                                     if (it.getValue().get('cross') == true) {
-                                        echo "${it.getValue().get('cross')}"
                                         arch += "${CROSSSUFFIX}"
                                     }
                                     archlist += "${arch} "
@@ -376,6 +198,86 @@ ssh ${sshUser}@${remoteHost} \\
         failure {
             timestamps {
                 notifySlack("${config.slack.channel}", 'Build', 'FAILURE')
+            }
+        }
+    }
+}
+
+def transformIntoBuildStep(String archName) {
+    return {
+        timestamps {
+            script {
+                def arch = "${config.archs."${archName}".arch}"
+
+                // First try to cross-build packages (when enabled)
+                if ("${config.archs."${archName}"?.enabled}" == "true" &&
+                    "${config.archs."${archName}"?.cross}" == "true") {
+                    def buildtype = 'cross'
+
+                    try {
+                        sh "${WORKSPACE}/${BUILDSCRIPT} ${arch} ${buildtype} ${BUILDNAME} ${JAILNAMEPREFIX} ${config.poudriere.pkgListDir} ${config.poudriere.portsTree}"
+                        currentBuild.description += " SUCCESS(${arch} ${buildtype})"
+                    } catch (Exception e) {
+                        currentBuild.description += " FAILURE(${arch} ${buildtype})"
+                        notifySlack("${config.slack.channel}", "Build ${arch} (${buildtype}) pkgs", 'FAILURE', "${config.poudriere.urlBase}?mastername=${JAILNAMEPREFIX}${arch}${CROSSSUFFIX}-${config.poudriere.portsTree}&build=${BUILDNAME}")
+                    }
+                }
+
+                // Copy cross packages -> native working directory
+                // (Only when both buildtypes are enabled)
+                if ("${config.archs."${archName}"?.cross}" == "true" &&
+                    "${config.archs."${archName}"?.native}" == "true") {
+                    try {
+                        sh "${WORKSPACE}/${COPYC2NSCRIPT} ${arch} ${config.poudriere.pkgBaseDir} ${config.poudriere.portsTree}"
+                        currentBuild.description += " SUCCESS(${arch} cross->native)"
+                    } catch (Exception e) {
+                        currentBuild.description += " FAILURE(${arch} cross->native)"
+                        notifySlack("${config.slack.channel}", "Copy ${arch} cross->native dir", 'FAILURE')
+                    }
+                }
+
+                // Next try to native-build packages (when enabled)
+                if ("${config.archs."${archName}"?.enabled}" == "true" &&
+                    "${config.archs."${archName}"?.native}" == "true") {
+                    def buildtype = 'native'
+                    def nativeHost = "${config.archs."${archName}".nativeHost}"
+                    def nativeHostBinDir = "${config.archs."${archName}".nativeHostBinDir}"
+
+                    try {
+                        sshagent (credentials: [sshCredential]) {
+                            sh """
+ssh ${sshUser}@${nativeHost} mkdir -p ${nativeHostBinDir}
+scp ${WORKSPACE}/\${BUILDSCRIPT} ${sshUser}@${nativeHost}:${nativeHostBinDir}
+ssh ${sshUser}@${nativeHost} \\
+    env WORKSPACE=${nativeHostBinDir} PORTSTREE=${config.poudriere.portsTree} dryRunBuild=${dryRunBuild} verboseBuild=${verboseBuild} ${nativeHostBinDir}/\${BUILDSCRIPT} ${arch} ${buildtype} ${BUILDNAME} ${JAILNAMEPREFIX} ${config.poudriere.pkgListDir} ${config.poudriere.portsTree}; \\
+    rm -f ${nativeHostBinDir}/\${BUILDSCRIPT}; \\
+    rmdir ${nativeHostBinDir} || echo ignore
+"""
+                            currentBuild.description += " SUCCESS(${arch} ${buildtype})"
+                        }
+                    } catch (Exception e) {
+                        currentBuild.description += " FAILURE(${arch} ${buildtype})"
+                        sh """
+ssh ${sshUser}@${nativeHost} \\
+    rm -f ${nativeHostBinDir}/\${BUILDSCRIPT}; \\
+    rmdir ${nativeHostBinDir} || echo ignore
+"""
+                        notifySlack("${config.slack.channel}", "Build ${arch} (${buildtype}) pkgs", 'FAILURE', "${config.poudriere.urlBase}?mastername=${JAILNAMEPREFIX}armv6-${config.poudriere.portsTree}&build=${BUILDNAME}")
+                    }
+                }
+
+                // Sync native and cross package directories
+                // (Only when both buildtypes are enabled)
+                if ("${config.archs."${archName}"?.cross}" == "true" &&
+                    "${config.archs."${archName}"?.native}" == "true") {
+                    try {
+                        sh "${WORKSPACE}/${COPYN2CSCRIPT} ${arch} ${config.poudriere.pkgBaseDir} ${config.poudriere.portsTree}"
+                        currentBuild.description += " SUCCESS(${arch} native->cross)"
+                    } catch (Exception e) {
+                        currentBuild.description += " FAILURE(${arch} native->cross)"
+                        notifySlack("${config.slack.channel}", "Sync ${arch} cross to native dir", 'FAILURE')
+                    }
+                }
             }
         }
     }
