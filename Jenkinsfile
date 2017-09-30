@@ -71,9 +71,10 @@ pipeline {
                 timestamps {
                     script {
                         config = readJSON(file: "${CONFIG}")
-                        buildSteps = config.archs.collectEntries(
+                        def Map archs = config.archs
+                        buildSteps = archs.collectEntries(
                             {
-                                [it, transformIntoBuildStep(it)]
+                                [it.getValue().get('arch') + ' packages', transformIntoBuildStep(it.getValue().get('arch'))]
                             }
                         )
                         // Here and there this global variable is abused to
