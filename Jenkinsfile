@@ -226,7 +226,8 @@ def transformIntoBuildStep(String archName) {
 
                 // Copy cross packages -> native working directory
                 // (Only when both buildtypes are enabled)
-                if ("${config.archs."${archName}"?.cross}" == "true" &&
+                if ("${config.archs."${archName}"?.enabled}" == "true" &&
+                    "${config.archs."${archName}"?.cross}" == "true" &&
                     "${config.archs."${archName}"?.native}" == "true") {
                     try {
                         sh "${WORKSPACE}/${COPYC2NSCRIPT} ${arch} ${config.poudriere.pkgBaseDir} ${config.poudriere.portsTree}"
@@ -269,7 +270,8 @@ ssh ${sshUser}@${nativeHost} \\
 
                 // Sync native and cross package directories
                 // (Only when both buildtypes are enabled)
-                if ("${config.archs."${archName}"?.cross}" == "true" &&
+                if ("${config.archs."${archName}"?.enabled}" == "true" &&
+                    "${config.archs."${archName}"?.cross}" == "true" &&
                     "${config.archs."${archName}"?.native}" == "true") {
                     try {
                         sh "${WORKSPACE}/${COPYN2CSCRIPT} ${arch} ${config.poudriere.pkgBaseDir} ${config.poudriere.portsTree}"
