@@ -28,8 +28,8 @@ pipeline {
         // Scripts
         UPDATESCRIPT='UpdateTree.sh'
         BUILDSCRIPT='BuildPackages.sh'
-        COPYN2CSCRIPT='CopyPackages.sh'
-        COPYC2NSCRIPT='SyncNativeCrossPkgDirs.sh'
+        COPYC2NSCRIPT='CopyPackagesCross2Native.sh'
+        COPYN2CSCRIPT='CopyPackagesNative2Cross.sh'
         SYNCSCRIPT='SyncPackages.sh'
         // Build name based on current date/time
         BUILDNAME=sh (
