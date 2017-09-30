@@ -111,7 +111,9 @@ pipeline {
                 environment name: 'doBuild', value: 'y'
             }
             steps {
-                parallel(buildSteps)
+                script {
+                    parallel(buildSteps)
+                }
             }
             post {
                 failure {
