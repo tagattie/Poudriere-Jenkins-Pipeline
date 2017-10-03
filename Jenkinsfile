@@ -61,6 +61,7 @@ pipeline {
                 timestamps {
                     checkout scm
                     archiveArtifacts 'Jenkinsfile'
+                    archiveArtifacts 'Config.json'
                     archiveArtifacts '*.sh'
                 }
             }
