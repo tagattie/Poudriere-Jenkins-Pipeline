@@ -73,9 +73,12 @@ pipeline {
                     script {
                         config = readJSON(file: "${CONFIG}")
                         def Map archs = config.archs
+                        // def Random random = new Random()
+                        def index = 0
+                        def sleep = 1800 // 30 mins.
                         buildSteps = archs.collectEntries(
                             {
-                                [it.getValue().get('arch') + ' packages', transformIntoBuildStep(it.getValue().get('arch'))]
+                                [it.getValue().get('arch') + ' packages', transformIntoBuildStep(it.getValue().get('arch'), index++ * sleep)]
                             }
                         )
                         // Here and there this global variable is abused to
@@ -207,10 +210,13 @@ pipeline {
     }
 }
 
-def transformIntoBuildStep(String archName) {
+def transformIntoBuildStep(String archName, int sleep) {
     return {
         timestamps {
             script {
+                // Sleep for the specified time to avoid congestion
+                sh "sleep ${sleep}"
+
                 def arch = "${config.archs."${archName}".arch}"
 
                 // First try to cross-build packages (when enabled)
