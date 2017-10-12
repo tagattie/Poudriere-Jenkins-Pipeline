@@ -51,8 +51,11 @@ pipeline {
         // Suffix for jail name for cross building
         CROSSSUFFIX="x"
     }
-    // parameters {
-    // }
+    parameters {
+        string(name: 'SLEEPINTERVAL',
+               defaultValue: '3600',  // 1 hour
+               description: 'Sleep interval (secs) between architecture builds.')
+    }
     // triggers {
     // }
     stages {
@@ -73,12 +76,10 @@ pipeline {
                     script {
                         config = readJSON(file: "${CONFIG}")
                         def Map archs = config.archs
-                        // def Random random = new Random()
                         def index = 0
-                        def sleep = 1800 // 30 mins.
                         buildSteps = archs.collectEntries(
                             {
-                                [it.getValue().get('arch') + ' packages', transformIntoBuildStep(it.getValue().get('arch'), index++ * sleep)]
+                                [it.getValue().get('arch') + ' packages', transformIntoBuildStep(it.getValue().get('arch'), index++ * ("${SLEEPINTERVAL}" as int))]
                             }
                         )
                         // Here and there this global variable is abused to
