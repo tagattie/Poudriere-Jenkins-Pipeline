@@ -8,7 +8,7 @@ export PATH=/bin:/usr/bin:/usr/local/bin
 PORTSTREE=${1}
 
 # Update the ports tree
-if [ "${dryRunUpdate}" != "y" ]; then
+if [ "${DRYRUNUPDATE}" != "true" ]; then
     # Update the specified ports tree
     sudo poudriere ports -v -u -p ${PORTSTREE}
 else

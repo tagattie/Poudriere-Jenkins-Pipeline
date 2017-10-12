@@ -24,10 +24,10 @@ LATESTNATIVEREALDIR=$(find ${NATIVEPKGDIR}/ -type d -depth 1 -print | \
                     head -n 1)
 
 # Copy cross-built packages to native-build directory
-if [ "${dryRunCopy}" == "y" ]; then
+if [ "${DRYRUNCOPY}" == "true" ]; then
     DRYRUN_FLAG="-n"
 fi
-if  [ "${verboseCopy}" == "y" ]; then
+if  [ "${VERBOSECOPY}" == "true" ]; then
     VERBOSE_FLAG="-v"
 fi
 if [ -n "${LATESTNATIVEREALDIR}" ]; then

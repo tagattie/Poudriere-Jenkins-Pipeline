@@ -16,10 +16,10 @@ if [ $# -gt 6 ]; then
     ARCHLIST=$@
 fi
 
-if [ "${dryRunSync}" == "y" ]; then
+if [ "${DRYRUNSYNC}" == "true" ]; then
     DRYRUN_FLAG="-n"
 fi
-if  [ "${verboseSync}" == "y" ]; then
+if  [ "${VERBOSESYNC}" == "true" ]; then
     VERBOSE_FLAG="-v"
 fi
 for i in ${ARCHLIST}; do

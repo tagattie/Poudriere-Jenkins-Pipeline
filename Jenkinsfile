@@ -6,18 +6,6 @@
 //
 // sshCredential (credential for logging into the following hosts)
 // sshUser       (user for ssh remote login to native hosts)
-//
-// Parameters for debugging
-// doUpdate      (If y, execute update stage)
-// doBuild       (If y, build packages for architectures)
-// doSync        (If y, sync artifacts with pkg serving server)
-// dryRunUpdate  (If y, dry run update stage)
-// dryRunBuild   (If y, dry run build stage)
-// dryRunCopy    (If y, dry run copy stage)
-// dryRunSync    (If y, dry run sync stage)
-// verboseBuild  (If y, update stage verbose output)
-// verboseCopy   (If y, copy stage verbose output)
-// verboseSync   (If y, sync stage verbose output)
 ////////
 
 pipeline {
@@ -52,6 +40,36 @@ pipeline {
         CROSSSUFFIX="x"
     }
     parameters {
+        booleanParam(name: 'DOUPDATE',
+                     defaultValue: true,
+                     description: 'If true, execute update stage.')
+        booleanParam(name: 'DOBUILD',
+                     defaultValue: true,
+                     description: 'If true, build packages for architectures.')
+        booleanParam(name: 'DOSYNC',
+                     defaultValue: true,
+                     description: 'If true, sync artifacts with pkg serving server.')
+        booleanParam(name: 'DRYRUNUPDATE',
+                     defaultValue: false,
+                     description: 'If true, dry run update stage.')
+        booleanParam(name: 'DRYRUNBUILD',
+                     defaultValue: false,
+                     description: 'If true, dry run build stage.')
+        booleanParam(name: 'DRYRUNCOPY',
+                     defaultValue: false,
+                     description: 'If true, dry run copy stage.')
+        booleanParam(name: 'DRYRUNSYNC',
+                     defaultValue: false,
+                     description: 'If true, dry run sync stage.')
+        booleanParam(name: 'VERBOSEBUILD',
+                     defaultValue: false,
+                     description: 'If true, build stage verbose output.')
+        booleanParam(name: 'VERBOSECOPY',
+                     defaultValue: true,
+                     description: 'If true, copy stage verbose output.')
+        booleanParam(name: 'VERBOSESYNC',
+                     defaultValue: true,
+                     description: 'If true, sync stage verbose output.')
         string(name: 'SLEEPINTERVAL',
                defaultValue: '3600',  // 1 hour
                description: 'Sleep interval (secs) between architecture builds.')
@@ -95,7 +113,7 @@ pipeline {
 
         stage('Update ports tree.') {
             when {
-                environment name: 'doUpdate', value: 'y'
+                environment name: 'DOUPDATE', value: 'true'
             }
             steps {
                 timestamps {
@@ -113,7 +131,7 @@ pipeline {
 
         stage('Build packages.') {
             when {
-                environment name: 'doBuild', value: 'y'
+                environment name: 'DOBUILD', value: 'true'
             }
             steps {
                 script {
@@ -131,7 +149,7 @@ pipeline {
 
         stage('Sync built artifact with package servering host.') {
             when {
-                environment name: 'doSync', value: 'y'
+                environment name: 'DOSYNC', value: 'true'
             }
             steps {
                 timestamps {
@@ -264,7 +282,7 @@ def transformIntoBuildStep(String archName, int sleep) {
 ssh ${sshUser}@${nativeHost} mkdir -p ${nativeHostBinDir}
 scp ${WORKSPACE}/\${BUILDSCRIPT} ${sshUser}@${nativeHost}:${nativeHostBinDir}
 ssh ${sshUser}@${nativeHost} \\
-    env WORKSPACE=${nativeHostBinDir} PORTSTREE=${config.poudriere.portsTree} dryRunBuild=${dryRunBuild} verboseBuild=${verboseBuild} ${nativeHostBinDir}/\${BUILDSCRIPT} ${arch} ${buildtype} ${BUILDNAME} ${JAILNAMEPREFIX} ${config.poudriere.pkgListDir} ${config.poudriere.portsTree}; \\
+    env WORKSPACE=${nativeHostBinDir} PORTSTREE=${config.poudriere.portsTree} DRYRUNBUILD=${DRYRUNBUILD} VERBOSEBUILD=${VERBOSEBUILD} ${nativeHostBinDir}/\${BUILDSCRIPT} ${arch} ${buildtype} ${BUILDNAME} ${JAILNAMEPREFIX} ${config.poudriere.pkgListDir} ${config.poudriere.portsTree}; \\
     rm -f ${nativeHostBinDir}/\${BUILDSCRIPT}; \\
     rmdir ${nativeHostBinDir} || echo ignore
 """
