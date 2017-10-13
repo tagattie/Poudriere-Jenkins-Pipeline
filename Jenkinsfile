@@ -1,11 +1,10 @@
 #! /usr/bin/env groovy
 
 ////////
-// Set this job as "parameterized build" and
-// specify the following parameters.
+// Set this job as "parameterized build" and specify the following parameters.
 //
-// sshCredential (credential for logging into the following hosts)
-// sshUser       (user for ssh remote login to native hosts)
+// sshCredential (credential for logging into native hosts)
+// sshUser       (user for logging into native hosts)
 ////////
 
 pipeline {
