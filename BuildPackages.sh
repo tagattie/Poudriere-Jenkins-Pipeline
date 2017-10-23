@@ -11,7 +11,7 @@ if [ "${2}" == "native" ]; then
     CROSS=""
 else
     echo "Cross building packages for ${ARCH} architecture."
-    CROSS="${CROSSSUFFIX}"
+    CROSS=${CROSSSUFFIX}
 fi
 BUILDNAME=${3}
 JAILNAME=${4}${1}${CROSS}
