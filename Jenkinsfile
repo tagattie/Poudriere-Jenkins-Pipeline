@@ -23,15 +23,19 @@ pipeline {
             returnStdout: true,
             script: 'date "+%Y-%m-%d_%Hh%Mm%Ss"'
         ).trim()
-        // ^-- here, new line is accepted
         // FreeBSD versions (used as a part of ABI string)
         MAJORREL=sh (
             returnStdout: true,
-            script: $/uname -r|awk -F- '{print $$1}'|awk -F. '{print $$1}'/$).trim()
-        // ^-- here, new line causes an error, why???
+            script: $/
+uname -r|awk -F- '{print $$1}'|awk -F. '{print $$1}'
+/$
+).trim()
         MINORREL=sh (
             returnStdout: true,
-            script: $/uname -r|awk -F- '{print $$1}'|awk -F. '{print $$2}'/$).trim()
+            script: $/
+uname -r|awk -F- '{print $$1}'|awk -F. '{print $$2}'
+/$
+).trim()
         // Jail name prefix which poudriere will work with
         // Actual jail names will be releng111amd64, releng111i386, etc.
         JAILNAMEPREFIX="releng${MAJORREL}${MINORREL}"
