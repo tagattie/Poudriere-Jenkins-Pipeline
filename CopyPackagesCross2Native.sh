@@ -12,16 +12,18 @@ PORTSTREE=${3}
 NATIVEPKGDIR=${PKGBASEDIR}/${JAILNAMEPREFIX}${ARCH}-${PORTSTREE}
 CROSSPKGDIR=${PKGBASEDIR}/${JAILNAMEPREFIX}${ARCH}${CROSSSUFFIX}-${PORTSTREE}
 
-# Find the newest .real-XXXX directory of cross-built packages
+# Find the latest .real-XXXX directory of cross-built packages
 LATESTCROSSREALDIR=$(find ${CROSSPKGDIR}/ -type d -depth 1 -print | \
                          awk -F'/' '{print $NF}' | \
                          sort -nr | \
                          head -n 1)
-# Find the newest .real-XXXX directory of native-built packages
+# Find the latest .real-XXXX directory of native-built packages
 LATESTNATIVEREALDIR=$(find ${NATIVEPKGDIR}/ -type d -depth 1 -print | \
                     awk -F'/' '{print $NF}' | \
                     sort -nr | \
                     head -n 1)
+echo "Latest cross-built .real-XXXX directory is ${LATESTCROSSREALDIR}."
+echo "Latest native-built .real-XXXX directory is ${LATESTNATIVEREALDIR}."
 
 # Copy cross-built packages to native-build directory
 if [ "${DRYRUNCOPY}" == "true" ]; then
@@ -33,6 +35,7 @@ fi
 if [ -n "${LATESTNATIVEREALDIR}" ]; then
     # Only when there is already one, copy the contents of cross-built
     # directory to a native building working directory
+    echo "Syncing cross-built package directory with native .building directory."
     sudo mkdir -p ${NATIVEPKGDIR}/.building
     cd ${CROSSPKGDIR}/${LATESTCROSSREALDIR}
     for i in "All" "Latest"; do
