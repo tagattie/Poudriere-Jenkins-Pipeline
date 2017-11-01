@@ -14,14 +14,14 @@ CROSSPKGDIR=${PKGBASEDIR}/${JAILNAMEPREFIX}${ARCH}${CROSSSUFFIX}-${PORTSTREE}
 
 # Find the latest .real-XXXX directory of cross-built packages
 LATESTCROSSREALDIR=$(find ${CROSSPKGDIR}/ -type d -depth 1 -print | \
-                         awk -F'/' '{print $NF}' | \
-                         sort -nr | \
-                         head -n 1)
+    awk -F'/' '{print $NF}' | \
+    sort -nr | \
+    head -n 1)
 # Find the latest .real-XXXX directory of native-built packages
 LATESTNATIVEREALDIR=$(find ${NATIVEPKGDIR}/ -type d -depth 1 -print | \
-                    awk -F'/' '{print $NF}' | \
-                    sort -nr | \
-                    head -n 1)
+    awk -F'/' '{print $NF}' | \
+    sort -nr | \
+    head -n 1)
 echo "Latest cross-built .real-XXXX directory is ${LATESTCROSSREALDIR}."
 echo "Latest native-built .real-XXXX directory is ${LATESTNATIVEREALDIR}."
 
