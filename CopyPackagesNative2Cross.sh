@@ -37,7 +37,7 @@ fi
 REALDIRSUBSTR="real"
 # Check if the latest real dirs are really .real_XXXX and not .building
 if [ "${LATESTCROSSREALDIR#*$REALDIRSUBSTR*}" != "${LATESTCROSSREALDIR}" ] && \
-    ["${LATESTNATIVEREALDIR#*$REALDIRSUBSTR*}" != "${LATESTNATIVEREALDIR}" ]; then
+    [ "${LATESTNATIVEREALDIR#*$REALDIRSUBSTR*}" != "${LATESTNATIVEREALDIR}" ]; then
     CROSSREALDIREPOCH=$(echo ${LATESTCROSSREALDIR} | awk -F'_' '{print $NF}')
     NATIVEREALDIREPOCH=$(echo ${LATESTNATIVEREALDIR} | awk -F'_' '{print $NF}')
     if [ ${NATIVEREALDIREPOCH} -gt ${CROSSREALDIREPOCH} ]; then
