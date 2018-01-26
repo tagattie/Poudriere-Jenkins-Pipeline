@@ -84,7 +84,7 @@ uname -r|awk -F- '{print $$1}'|awk -F. '{print $$2}'
             steps {
                 timestamps {
                     checkout scm
-                    archiveArtifacts 'Jenkinsfile'
+                    archiveArtifacts 'Jenkinsfile.groovy'
                     archiveArtifacts 'Config.json'
                     archiveArtifacts '*.sh'
                 }
