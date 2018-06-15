@@ -141,7 +141,8 @@ uname -r|awk -F- '{print $$1}'|awk -F. '{print $$2}'
             }
             steps {
                 script {
-                    parallel(buildSteps)
+                    // parallel(buildSteps)
+                    buildSteps
                 }
             }
             post {
@@ -240,8 +241,8 @@ def transformIntoBuildStep(String archName, int sleep) {
         timestamps {
             script {
                 // Sleep for the specified time to avoid congestion
-                sh "sleep ${sleep}"
-                sh "lockf -k ${WORKSPACE}/${LOCKFILE} ${WORKSPACE}/${CHECKSCRIPT}"
+                // sh "sleep ${sleep}"
+                // sh "lockf -k ${WORKSPACE}/${LOCKFILE} ${WORKSPACE}/${CHECKSCRIPT}"
 
                 def arch = "${config.archs."${archName}".arch}"
 
