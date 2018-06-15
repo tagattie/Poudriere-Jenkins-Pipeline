@@ -3,11 +3,6 @@
 export LANG=C
 export PATH=/bin:/usr/bin:/usr/local/bin:/sbin:/usr/sbin:/usr/local/sbin
 
-LOADS=$(uptime | sed -e 's/^.*load averages: //')
-LOAD_1=$(echo ${LOADS} | awk -F', ' '{print $1}' | awk -F. '{print $1}')
-LOAD_5=$(echo ${LOADS} | awk -F', ' '{print $2}' | awk -F. '{print $1}')
-LOAD_15=$(echo ${LOADS} | awk -F', ' '{print $3}' | awk -F. '{print $1}')
-
 LOAD_THRESH=2
 
 WAIT_CNT=0
@@ -15,6 +10,11 @@ WAIT_INTERVAL=301
 #MAX_WAIT=$((3600 * 6)) # 6 hours
 
 while true; do
+    LOADS=$(uptime | sed -e 's/^.*load averages: //')
+    LOAD_1=$(echo ${LOADS} | awk -F', ' '{print $1}' | awk -F. '{print $1}')
+    LOAD_5=$(echo ${LOADS} | awk -F', ' '{print $2}' | awk -F. '{print $1}')
+    LOAD_15=$(echo ${LOADS} | awk -F', ' '{print $3}' | awk -F. '{print $1}')
+
     if [ ${LOAD_1} -lt ${LOAD_THRESH} ] &&
            [ ${LOAD_5} -lt ${LOAD_THRESH} ] &&
            [ ${LOAD_15} -lt ${LOAD_THRESH} ] &&
