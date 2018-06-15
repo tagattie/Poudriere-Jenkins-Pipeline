@@ -18,6 +18,9 @@ pipeline {
         COPYC2NSCRIPT='CopyPackagesCross2Native.sh'
         COPYN2CSCRIPT='CopyPackagesNative2Cross.sh'
         SYNCSCRIPT='SyncPackages.sh'
+        CHECKSCRIPT='CheckLoadAvgsAndRunJails.sh'
+        // Lockfile
+        LOCKFILE='lockfile'
         // Build name based on current date/time
         BUILDNAME=sh (
             returnStdout: true,
@@ -74,7 +77,7 @@ uname -r|awk -F- '{print $$1}'|awk -F. '{print $$2}'
                      defaultValue: true,
                      description: 'If true, sync stage verbose output.')
         string(name: 'SLEEPINTERVAL',
-               defaultValue: '3600',  // 1 hour
+               defaultValue: '1800',  // 30 minutes
                description: 'Sleep interval (secs) between architecture builds.')
     }
     // triggers {
@@ -238,6 +241,7 @@ def transformIntoBuildStep(String archName, int sleep) {
             script {
                 // Sleep for the specified time to avoid congestion
                 sh "sleep ${sleep}"
+                sh "lockf -k ${WORKSPACE}/${LOCKFILE} ${WORKSPACE}/${CHECKSCRIPT}"
 
                 def arch = "${config.archs."${archName}".arch}"
 
