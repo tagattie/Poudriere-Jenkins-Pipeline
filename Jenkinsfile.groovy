@@ -77,7 +77,7 @@ uname -r|awk -F- '{print $$1}'|awk -F. '{print $$2}'
                      defaultValue: true,
                      description: 'If true, sync stage verbose output.')
         string(name: 'SLEEPINTERVAL',
-               defaultValue: '1800',  // 30 minutes
+               defaultValue: '600',  // 10 minutes
                description: 'Sleep interval (secs) between architecture builds.')
     }
     // triggers {
