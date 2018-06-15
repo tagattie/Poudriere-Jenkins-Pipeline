@@ -17,7 +17,6 @@ while true; do
 
     if [ ${LOAD_1} -lt ${LOAD_THRESH} ] &&
            [ ${LOAD_5} -lt ${LOAD_THRESH} ] &&
-           [ ${LOAD_15} -lt ${LOAD_THRESH} ] &&
            [ $(( $(jls | wc -l) - 1 )) -le 1 ]; then
         break
     else
