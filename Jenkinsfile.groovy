@@ -143,6 +143,7 @@ uname -r|awk -F- '{print $$1}'|awk -F. '{print $$2}'
                 script {
                     // parallel(buildSteps)
                     def Map archs = config.archs
+                    def index = 0
                     archs.collectEntries(
                         {
                             [it.getValue().get('arch') + ' packages', transformIntoBuildStep(it.getValue().get('arch'), index++ * ("${SLEEPINTERVAL}" as int))]
