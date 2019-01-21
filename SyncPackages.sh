@@ -49,6 +49,7 @@ for i in ${ARCHLIST}; do
                 sleep ${SLEEP_INTERVAL}
             else
                 echo "All sync trial for ${arch} failed, giving up..."
+                break
             fi
         else
             echo "Sync for ${arch} succeeded, exitting..."
