@@ -3,9 +3,10 @@
 export LANG=C
 export PATH=/bin:/usr/bin:/usr/local/bin
 
-RSYNC_FLAGS="-a --info=STATS3 --delete --stats -4"
+RSYNC_FLAGS="-a --info=STATS3 --delete --stats"
 # IPv6 connection to server seems unstable, so temporarily use IPv4
 RSYNC_FLAGS="${RSYNC_FLAGS} -4"
+SSH_FLAGS="-4"
 
 # Command-line Format:
 # SyncPackages.sh pkgBaseDir portsTree syncUser syncHost syncPort syncBase [arch ...]
@@ -36,7 +37,8 @@ for i in ${ARCHLIST}; do
     SLEEP_INTERVAL=60
     cnt=0
     while true; do
-        rsync ${DRYRUN_FLAG} ${VERBOSE_FLAG} -e "ssh -p ${SYNCPORT}" \
+        rsync ${DRYRUN_FLAG} ${VERBOSE_FLAG} \
+              -e "ssh ${SSH_FLAGS} -p ${SYNCPORT}" \
               ${RSYNC_FLAGS} \
               ${PKGDIR}/ \
               ${SYNCUSER}@${SYNCHOST}:${SYNCBASE}/${ABI}
