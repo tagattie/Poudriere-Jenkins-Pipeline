@@ -33,28 +33,9 @@ for i in ${ARCHLIST}; do
     PKGDIR=${PKGBASEDIR}/${JAILNAMEPREFIX}${i}-${PORTSTREE}
     ABI=FreeBSD:${MAJORREL}:${arch}
 
-    MAX_TRIES=5
-    SLEEP_INTERVAL=60
-    cnt=0
-    while true; do
-        rsync ${DRYRUN_FLAG} ${VERBOSE_FLAG} \
-              -e "ssh ${SSH_FLAGS} -p ${SYNCPORT}" \
-              ${RSYNC_FLAGS} \
-              ${PKGDIR}/ \
-              ${SYNCUSER}@${SYNCHOST}:${SYNCBASE}/${ABI}
-        if [ $? != 0 ]; then
-            if [ ${cnt} -lt ${MAX_TRIES} ]; then
-                cnt=$((cnt+1))
-                echo "Sync for ${arch} failed, retrying..."
-                sleep ${SLEEP_INTERVAL}
-            else
-                echo "All sync trial for ${arch} failed, giving up..."
-                break
-            fi
-        else
-            echo "Sync for ${arch} succeeded, exitting..."
-            break
-        fi
-    done
-
+    rsync ${DRYRUN_FLAG} ${VERBOSE_FLAG} \
+          -e "ssh ${SSH_FLAGS} -p ${SYNCPORT}" \
+          ${RSYNC_FLAGS} \
+          ${PKGDIR}/ \
+          ${SYNCUSER}@${SYNCHOST}:${SYNCBASE}/${ABI}
 done
