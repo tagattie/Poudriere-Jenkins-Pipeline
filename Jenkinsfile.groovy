@@ -172,9 +172,11 @@ uname -r|awk -F- '{print $$1}'|awk -F. '{print $$2}'
                                 }
                                 sh "${WORKSPACE}/${SYNCSCRIPT} ${config.poudriere.pkgBaseDir} ${config.poudriere.portsTree} ${config.sync.user} ${config.sync.host} ${config.sync.port} ${config.sync.baseDir} ${archlist}"
                                 currentBuild.description += ' SUCCESS(sync)'
+                                return true
                             } catch (Exception e) {
                                 currentBuild.description += ' FAILURE(sync)'
                                 notifySlack("${config.slack.channel}", 'Sync pkgs', 'FAILURE')
+                                return false
                             }
                         }
                     }
