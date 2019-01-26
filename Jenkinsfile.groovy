@@ -157,23 +157,25 @@ uname -r|awk -F- '{print $$1}'|awk -F. '{print $$2}'
             steps {
                 timestamps {
                     script {
-                        try {
-                            def Map archs = config.archs
-                            def archlist = ""
-                            archs.each {
-                                if (it.getValue().get('enabled') == true) {
-                                    arch = "${it.getValue().get('arch')}"
-                                    if (it.getValue().get('cross') == true) {
-                                        arch += "${CROSSSUFFIX}"
+                        waitUntil {
+                            try {
+                                def Map archs = config.archs
+                                def archlist = ""
+                                archs.each {
+                                    if (it.getValue().get('enabled') == true) {
+                                        arch = "${it.getValue().get('arch')}"
+                                        if (it.getValue().get('cross') == true) {
+                                            arch += "${CROSSSUFFIX}"
+                                        }
+                                        archlist += "${arch} "
                                     }
-                                    archlist += "${arch} "
                                 }
+                                sh "${WORKSPACE}/${SYNCSCRIPT} ${config.poudriere.pkgBaseDir} ${config.poudriere.portsTree} ${config.sync.user} ${config.sync.host} ${config.sync.port} ${config.sync.baseDir} ${archlist}"
+                                currentBuild.description += ' SUCCESS(sync)'
+                            } catch (Exception e) {
+                                currentBuild.description += ' FAILURE(sync)'
+                                notifySlack("${config.slack.channel}", 'Sync pkgs', 'FAILURE')
                             }
-                            sh "${WORKSPACE}/${SYNCSCRIPT} ${config.poudriere.pkgBaseDir} ${config.poudriere.portsTree} ${config.sync.user} ${config.sync.host} ${config.sync.port} ${config.sync.baseDir} ${archlist}"
-                            currentBuild.description += ' SUCCESS(sync)'
-                        } catch (Exception e) {
-                            currentBuild.description += ' FAILURE(sync)'
-                            notifySlack("${config.slack.channel}", 'Sync pkgs', 'FAILURE')
                         }
                     }
                 }
