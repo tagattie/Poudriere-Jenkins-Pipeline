@@ -174,8 +174,8 @@ uname -r|awk -F- '{print $$1}'|awk -F. '{print $$2}'
                                 currentBuild.description += ' SUCCESS(sync)'
                                 return true
                             } catch (Exception e) {
-                                currentBuild.description += ' FAILURE(sync)'
-                                notifySlack("${config.slack.channel}", 'Sync pkgs', 'FAILURE')
+                                currentBuild.description += ' TMPFAIL(sync)'
+                                notifySlack("${config.slack.channel}", 'Sync pkgs', 'TMPFAIL')
                                 return false
                             }
                         }
@@ -345,6 +345,10 @@ def notifySlack(String channelName = '#jenkins',
     else if (buildStatus == 'FAILURE') {
         colorCode = '#BB0000' // red
         statusString = 'failed'
+    }
+    else if (buildStatus == 'TMPFAIL') {
+        colorCode = '#CC4400' // orange
+        statusString = 'temporary failed'
     }
     else {
         colorCode = '#000000' // black
