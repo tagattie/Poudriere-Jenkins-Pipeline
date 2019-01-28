@@ -347,8 +347,8 @@ def notifySlack(String channelName = '#jenkins',
         statusString = 'failed'
     }
     else if (buildStatus == 'TMPFAIL') {
-        colorCode = '#CC4400' // orange
-        statusString = 'temporary failed'
+        colorCode = '#EEEE00' // yellow
+        statusString = 'temporarily failed'
     }
     else {
         colorCode = '#000000' // black
