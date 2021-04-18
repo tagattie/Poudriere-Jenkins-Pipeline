@@ -4,9 +4,6 @@ export LANG=C
 export PATH=/bin:/usr/bin:/usr/local/bin
 
 RSYNC_FLAGS="-a --info=STATS3 --delete --stats"
-# IPv6 connection to server seems unstable, so temporarily use IPv4
-RSYNC_FLAGS="${RSYNC_FLAGS} -4"
-SSH_FLAGS="-4"
 
 # Command-line Format:
 # SyncPackages.sh pkgBaseDir portsTree syncUser syncHost syncPort syncBase [arch ...]
