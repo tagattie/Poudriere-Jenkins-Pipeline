@@ -30,6 +30,14 @@ for i in ${ARCHLIST}; do
     PKGDIR=${PKGBASEDIR}/${JAILNAMEPREFIX}${i}-${PORTSTREE}
     ABI=FreeBSD:${MAJORREL}:${arch}
 
+    LATESTPKG_LOCAL=$(basename $(find -s ${PKGDIR} -type d -depth 1 -print|tail -n 1))
+    LATESTPKG_REMOTE=$(basename $(ssh -p ${SYNCPORT} ${SYNCUSER}@${SYNCHOST} \
+                                      find -s ${SYNCBASE}/${ABI} -type d -depth 1 -print|tail -n 1))
+    if [ "${LATESTPKG_LOCAL}" != "${LATESTPKG_REMOTE}" ]; then
+        ssh -p ${SYNCPORT} ${SYNCUSER}@${SYNCHOST} \
+            cp -pR ${SYNCBASE}/${ABI}/${LATESTPKG_REMOTE} ${SYNCBASE}/${ABI}/${LATESTPKG_LOCAL}
+    fi
+
     rsync ${DRYRUN_FLAG} ${VERBOSE_FLAG} \
           -e "ssh ${SSH_FLAGS} -p ${SYNCPORT}" \
           ${RSYNC_FLAGS} \
