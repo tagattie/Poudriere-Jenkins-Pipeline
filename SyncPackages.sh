@@ -33,7 +33,9 @@ for i in ${ARCHLIST}; do
     LATESTPKG_LOCAL=$(basename $(find -s ${PKGDIR} -type d -depth 1 -print|tail -n 1))
     LATESTPKG_REMOTE=$(basename $(ssh -p ${SYNCPORT} ${SYNCUSER}@${SYNCHOST} \
                                       find -s ${SYNCBASE}/${ABI} -type d -depth 1 -print|tail -n 1))
-    if [ "${LATESTPKG_LOCAL}" != "${LATESTPKG_REMOTE}" ]; then
+    if [ -n "${LATESTPKG_LOCAL}" ] && \
+           [ -n "${LATESTPKG_REMOTE}" ] && \
+           [ "${LATESTPKG_LOCAL}" != "${LATESTPKG_REMOTE}" ]; then
         ssh -p ${SYNCPORT} ${SYNCUSER}@${SYNCHOST} \
             cp -pR ${SYNCBASE}/${ABI}/${LATESTPKG_REMOTE} ${SYNCBASE}/${ABI}/${LATESTPKG_LOCAL}
     fi
