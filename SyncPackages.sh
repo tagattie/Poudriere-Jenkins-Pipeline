@@ -3,7 +3,7 @@
 export LANG=C
 export PATH=/bin:/usr/bin:/usr/local/bin
 
-RSYNC_FLAGS="-a --info=STATS3 --delete --partial --stats"
+RSYNC_FLAGS="-a --info=STATS3 --delete --partial --stats --exclude=.building"
 
 # Command-line Format:
 # SyncPackages.sh pkgBaseDir portsTree syncUser syncHost syncPort syncBase [arch ...]
