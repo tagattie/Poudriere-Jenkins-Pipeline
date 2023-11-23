@@ -30,9 +30,9 @@ for i in ${ARCHLIST}; do
     PKGDIR=${PKGBASEDIR}/${JAILNAMEPREFIX}${i}-${PORTSTREE}
     ABI=FreeBSD:${MAJORREL}:${arch}
 
-    LATESTPKG_LOCAL=$(basename $(find -s ${PKGDIR} -type d -depth 1 -print|tail -n 1))
-    LATESTPKG_REMOTE=$(basename $(ssh -p ${SYNCPORT} ${SYNCUSER}@${SYNCHOST} \
-                                      find -s ${SYNCBASE}/${ABI} -type d -depth 1 -print|tail -n 1))
+    LATESTPKG_LOCAL=$(basename "$(find -s ${PKGDIR} -type d -depth 1 -print|tail -n 1)")
+    LATESTPKG_REMOTE=$(basename "$(ssh -p ${SYNCPORT} ${SYNCUSER}@${SYNCHOST} \
+                                      find -s ${SYNCBASE}/${ABI} -type d -depth 1 -print|tail -n 1)")
     if [ -n "${LATESTPKG_LOCAL}" ] && \
            [ -n "${LATESTPKG_REMOTE}" ] && \
            [ "${LATESTPKG_LOCAL}" != "${LATESTPKG_REMOTE}" ]; then
