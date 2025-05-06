@@ -367,6 +367,7 @@ def notifySlack(String channelName = '#jenkins',
     else if (buildStatus == 'ABORTED') {
         colorCode = '#FFA500' // orange
         statusString = 'aborted'
+    }
     else if (buildStatus == 'TMPFAIL') {
         colorCode = '#EEEE00' // yellow
         statusString = 'temporarily failed'
