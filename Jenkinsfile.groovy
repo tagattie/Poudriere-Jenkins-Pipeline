@@ -90,7 +90,6 @@ uname -r|awk -F- '{print $$1}'|awk -F. '{print $$2}'
                         def previousBuild = currentBuild.getPreviousBuild()
                         if (previousBuild?.isBuilding()) {
                             currentBuild.result = 'ABORTED'
-                            notifySlack("${config.slack.channel}", 'New job', "${currentBuild.currentResult}")
                             error('Previous build is still running. Aborting new job.')
                         }
                     }
