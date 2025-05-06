@@ -88,8 +88,7 @@ uname -r|awk -F- '{print $$1}'|awk -F. '{print $$2}'
                 timestamps {
                     script {
                         def previousBuild = currentBuild.getPreviousBuild()
-                        if (previousBuild?.isBuilding()) {
-                            currentBuild.result = 'ABORTED'
+                        if (previousBuild != null && previousBuild.result == null) {
                             error('Previous build is still running. Aborting new job.')
                         }
                     }
