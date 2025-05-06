@@ -42,6 +42,9 @@ uname -r|awk -F- '{print $$1}'|awk -F. '{print $$2}'
         // Suffix for jail name for cross building
         CROSSSUFFIX="x"
     }
+    options {
+        disableConcurrentBuilds()
+    }
     parameters {
         booleanParam(name: 'DOUPDATE',
                      defaultValue: true,
@@ -80,6 +83,21 @@ uname -r|awk -F- '{print $$1}'|awk -F. '{print $$2}'
     // triggers {
     // }
     stages {
+        stage('Check if previous build is still running') {
+            steps {
+                timestamps {
+                    script {
+                        def previousBuild = currentBuild.getPreviousBuild()
+                        if (previousBuild?.isBuilding()) {
+                            currentBuild.result = 'ABORTED'
+                            notifySlack("${config.slack.channel}", 'New job', "${currentBuild.currentResult}")
+                            error('Previous build is still running. Aborting new job.')
+                        }
+                    }
+                }
+            }
+        }
+
         stage('Checkout Jenkinsfile and other files.') {
             steps {
                 timestamps {
@@ -346,6 +364,9 @@ def notifySlack(String channelName = '#jenkins',
         colorCode = '#BB0000' // red
         statusString = 'failed'
     }
+    else if (buildStatus == 'ABORTED') {
+        colorCode = '#FFA500' // orange
+        statusString = 'aborted'
     else if (buildStatus == 'TMPFAIL') {
         colorCode = '#EEEE00' // yellow
         statusString = 'temporarily failed'
