@@ -83,13 +83,18 @@ uname -r|awk -F- '{print $$1}'|awk -F. '{print $$2}'
     // triggers {
     // }
     stages {
-        stage('Check if previous build is still running') {
+        stage('Check if any of previous builds is still running') {
             steps {
                 timestamps {
                     script {
                         def previousBuild = currentBuild.getPreviousBuild()
-                        if (previousBuild != null && previousBuild.result == null) {
-                            error('Previous build is still running. Aborting new job.')
+                        def numPreviousBuilds = 20
+                        while (previousBuild != null && count < numPreviousBuilds) {
+                            if (previousBuild.result == null) {
+                                echo "Build #${previousBuild.number} is still running. Aborting new job."
+                                error('One of previous builds is still running. Aborting new job.')
+                            }
+                            previousBuild = previousBuild.getPreviousBuild()
                         }
                     }
                 }
