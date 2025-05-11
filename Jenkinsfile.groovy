@@ -88,6 +88,7 @@ uname -r|awk -F- '{print $$1}'|awk -F. '{print $$2}'
                 timestamps {
                     script {
                         def previousBuild = currentBuild.getPreviousBuild()
+                        def count = 0
                         def numPreviousBuilds = 20
                         while (previousBuild != null && count < numPreviousBuilds) {
                             if (previousBuild.result == null) {
